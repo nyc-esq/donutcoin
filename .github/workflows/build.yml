@@ -1,0 +1,60 @@
+name: build downloads
+# One-file executables for macOS (Apple silicon and Intel), Windows and Linux, attached to the
+# release when a v* tag is pushed. The Mac builds ship zipped: a bare binary loses its execute bit
+# when a browser downloads it, a zip keeps it (Safari unpacks it on arrival). Unsigned: the first
+# open on a Mac needs System Settings > Privacy & Security > Open Anyway, on Windows
+# "More info > Run anyway".
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: macos-14,       name: donutcoin-macos-arm64 }
+          - { os: ubuntu-22.04,   name: donutcoin-linux-x86_64 }
+          - { os: windows-2022,   name: donutcoin-windows.exe }
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - run: pip install -r requirements.txt pyinstaller
+      - run: pyinstaller --onefile --name donutcoin --collect-all donutcoin --add-data "static${{ runner.os == 'Windows' && ';' || ':' }}static" --hidden-import donutcoin.node --hidden-import donutcoin.miner --hidden-import donutcoin.wallet --hidden-import donutcoin.market --hidden-import donutcoin.push --hidden-import uvicorn.logging --hidden-import uvicorn.loops.auto --hidden-import uvicorn.protocols.http.auto --hidden-import uvicorn.protocols.websockets.auto --hidden-import uvicorn.lifespan.on cli.py
+      - run: mv dist/donutcoin* dist/${{ matrix.name }}
+        shell: bash
+      - if: runner.os == 'macOS'
+        run: cd dist && chmod +x ${{ matrix.name }} && ditto -c -k --norsrc ${{ matrix.name }} ${{ matrix.name }}.zip && rm ${{ matrix.name }}
+      - uses: actions/upload-artifact@v4
+        with: { name: '${{ matrix.name }}', path: 'dist/${{ matrix.name }}*' }
+  release:
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-22.04
+    permissions: { contents: write }
+    steps:
+      - uses: actions/download-artifact@v4
+        with: { path: dist, merge-multiple: true }
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*
+          generate_release_notes: true
+  # Intel Macs build on GitHub's remaining Intel runner, separately, so a slow or missing Intel
+  # runner never holds up the other three downloads (macos-13 was retired and queued forever).
+  intel:
+    runs-on: macos-15-intel
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - run: pip install -r requirements.txt pyinstaller
+      - run: pyinstaller --onefile --name donutcoin --collect-all donutcoin --add-data "static:static" --hidden-import donutcoin.node --hidden-import donutcoin.miner --hidden-import donutcoin.wallet --hidden-import donutcoin.market --hidden-import donutcoin.push --hidden-import uvicorn.logging --hidden-import uvicorn.loops.auto --hidden-import uvicorn.protocols.http.auto --hidden-import uvicorn.protocols.websockets.auto --hidden-import uvicorn.lifespan.on cli.py
+      - run: cd dist && mv donutcoin donutcoin-macos-intel && chmod +x donutcoin-macos-intel && ditto -c -k --norsrc donutcoin-macos-intel donutcoin-macos-intel.zip
+      - if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/donutcoin-macos-intel.zip
+    permissions: { contents: write }
