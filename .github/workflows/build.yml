@@ -1,0 +1,40 @@
+name: build downloads
+# One-file executables for macOS (Apple silicon and Intel), Windows and Linux, attached to the
+# release when a v* tag is pushed. Unsigned: first open needs right-click > Open on a Mac and
+# "More info > Run anyway" on Windows.
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - { os: macos-14,       name: donutcoin-macos-arm64 }
+          - { os: macos-13,       name: donutcoin-macos-intel }
+          - { os: ubuntu-22.04,   name: donutcoin-linux-x86_64 }
+          - { os: windows-2022,   name: donutcoin-windows.exe }
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - run: pip install -r requirements.txt pyinstaller
+      - run: pyinstaller --onefile --name donutcoin --collect-all donutcoin --add-data "static${{ runner.os == 'Windows' && ';' || ':' }}static" --hidden-import donutcoin.node --hidden-import donutcoin.miner --hidden-import donutcoin.wallet --hidden-import donutcoin.market --hidden-import donutcoin.push --hidden-import uvicorn.logging --hidden-import uvicorn.loops.auto --hidden-import uvicorn.protocols.http.auto --hidden-import uvicorn.protocols.websockets.auto --hidden-import uvicorn.lifespan.on cli.py
+      - run: mv dist/donutcoin* dist/${{ matrix.name }}
+        shell: bash
+      - uses: actions/upload-artifact@v4
+        with: { name: '${{ matrix.name }}', path: 'dist/${{ matrix.name }}' }
+  release:
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-22.04
+    permissions: { contents: write }
+    steps:
+      - uses: actions/download-artifact@v4
+        with: { path: dist, merge-multiple: true }
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*
+          generate_release_notes: true

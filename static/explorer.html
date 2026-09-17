@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Donut Coin</title><link rel="icon" href="/static/donut.jpeg"><link rel="manifest" href="/static/manifest.webmanifest"><link rel="apple-touch-icon" href="/static/icons/icon-180.png"><meta name="theme-color" content="#f4b400">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700;9..144,800&display=swap" rel="stylesheet"><link rel="stylesheet" href="/static/site.css?v=2026091701"></head><body><div class="wrap">
+<header>
+<img src="/static/donut.jpeg" alt="Princess Donut, the Queen Anne Chonk">
+<div><h1>Donut Coin</h1><p id="tag">Princess Donut, the Queen Anne Chonk. No value, all fun. Node: <span id="node">…</span></p></div>
+</header>
+<nav><a href="/" aria-current="page">Explorer</a><a href="/wallet">Wallet</a><a href="/market">Market</a><a href="/download">Download</a><a href="/mine">Get started</a><a href="/how">How it works</a><a href="/whitepaper">White paper</a><a href="/terms">Terms</a><a href="/privacy">Privacy</a><a href="https://askdonut.ai" target="_blank" rel="noopener">Ask her: askdonut.ai</a></nav>
+<div class="tiles">
+ <div class="tile"><b id="height">–</b><span>height</span></div>
+ <div class="tile"><b id="hashrate">–</b><span>network hashrate (est.)</span></div>
+ <div class="tile"><b id="difficulty">–</b><span>difficulty</span></div>
+ <div class="tile"><b id="supply">–</b><span>DONUT in existence</span></div>
+ <div class="tile"><b id="mempool">–</b><span>waiting transactions</span></div>
+ <div class="tile"><b id="peers">–</b><span>peers</span></div>
+ <div class="tile"><b id="doge">–</b><span>DOGE per Ribbon, last trade</span></div>
+</div>
+<form class="inline" onsubmit="return lookup()"><input id="q" placeholder="@username or a D… address" autocapitalize="none"><button>Look up</button></form>
+<div id="addr"></div>
+<div class="scroll"><table><thead><tr><th>Height</th><th>When</th><th>Miner</th><th>Tag</th><th>Txs</th><th>Difficulty</th><th>Hash</th></tr></thead><tbody id="blocks"></tbody></table></div>
+<footer>Not money, not an investment, not for sale. Scrypt proof of work, one-minute blocks, 10,000 DONUT a block, never halves. Checkpoints pin history; a heavier chain can replace at most the last 20 blocks; the market settles at 21. 1 Ribbon = 1,000,000 DONUT (100 blocks), 1 Tiara = 10 Ribbons (about a day of the network), 1 Chonk = 10 Tiaras (about a week). Reward spendable after 3 blocks. Refreshes every 5 s.</footer>
+</div>
+<script>
+const $=id=>document.getElementById(id), COIN=1e8;
+const fmt=n=>(n/COIN).toLocaleString(undefined,{maximumFractionDigits:2});
+const UNITS=[[1e8,'Chonk'],[1e7,'Tiara'],[1e6,'Ribbon']];
+const tiaras=n=>{for(const [k,name] of UNITS){if(n>=k*COIN){const v=n/(k*COIN);return ` <span class="muted" style="font-size:12px">= ${v.toLocaleString(undefined,{maximumFractionDigits:2})} ${name}${v===1?'':'s'}</span>`}}return ''};
+const ago=t=>{const s=Math.max(0,Math.floor(Date.now()/1000-t));return s<60?s+' s ago':s<3600?Math.floor(s/60)+' min ago':Math.floor(s/3600)+' h ago'};
+const hr=h=>h>=1e6?(h/1e6).toFixed(2)+' MH/s':h>=1e3?(h/1e3).toFixed(1)+' kH/s':Math.round(h)+' H/s';
+async function price(){try{const p=await (await fetch('/api/price')).json();$('doge').textContent=p.donut_in_doge?(p.donut_in_doge*1e6).toLocaleString(undefined,{maximumSignificantDigits:3}):(p.doge_usd?'no trades yet':'–')}catch(e){}}
+async function refresh(){try{
+ const i=await (await fetch('/api/info')).json();
+ $('node').textContent=i.name; $('height').textContent=i.height.toLocaleString(); $('hashrate').textContent=hr(i.hashrate);
+ $('difficulty').textContent=i.difficulty.toLocaleString(); $('supply').innerHTML=fmt(i.supply)+tiaras(i.supply); $('mempool').textContent=i.mempool; $('peers').textContent=i.peers;
+ const b=await (await fetch('/api/blocks?limit=25')).json();
+ $('blocks').innerHTML=b.map(x=>`<tr><td>${x.height}</td><td>${ago(x.timestamp)}</td><td>${x.miner_name?'<b>@'+x.miner_name+'</b>':'<span class="mono">'+x.miner.slice(0,14)+'…</span>'}</td><td>${x.tag.split('/')[0]||''}</td><td>${x.txs}</td><td>${x.difficulty}</td><td class="mono">${x.hash.slice(0,20)}…</td></tr>`).join('');
+}catch(e){}}
+async function lookup(){let a=$('q').value.trim();if(!a)return false;const box=$('addr');box.style.display='block';let name='';
+ if(a.startsWith('@')||/^[a-z0-9_]{3,24}$/i.test(a)){const n=await fetch('/api/account/address/'+a.replace(/^@/,'').toLowerCase());if(!n.ok){box.textContent='No account named @'+a.replace(/^@/,'').toLowerCase()+', and not an address.';return false}const j=await n.json();name='@'+j.username;a=j.address}
+ const r=await fetch('/api/address/'+a);
+ if(!r.ok){box.textContent='Not a Donut Coin address.';return false}const d=await r.json();
+ box.innerHTML=`${name?'<div style="font-size:18px"><b>'+name+'</b></div>':''}<div class="mono">${d.address}</div><div style="font-size:22px;margin:6px 0"><b>${fmt(d.balance)} DONUT</b>${tiaras(d.balance)} <span class="pill">${fmt(d.spendable.reduce((s,u)=>s+u.amount,0))} spendable</span></div>`+
+ (d.recent.length?'<div class="scroll"><table><thead><tr><th>Height</th><th>Amount</th><th>Type</th><th>Txid</th></tr></thead><tbody>'+d.recent.map(t=>`<tr><td>${t.height}</td><td>${(t.net>=0?'+':'−')+fmt(Math.abs(t.net))} DONUT</td><td>${t.coinbase?'mined':t.spent_from?'sent':'received'}</td><td class="mono">${t.txid.slice(0,20)}…</td></tr>`).join('')+'</tbody></table>':'<p>No transactions yet.</p>');
+ return false}
+refresh(); price(); setInterval(refresh,5000); setInterval(price,60000);
+</script></body></html>

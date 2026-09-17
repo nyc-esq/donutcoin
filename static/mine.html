@@ -1,0 +1,28 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="/static/donut.jpeg"><link rel="manifest" href="/static/manifest.webmanifest"><link rel="apple-touch-icon" href="/static/icons/icon-180.png"><meta name="theme-color" content="#f4b400"><title>Get started · Donut Coin</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700;9..144,800&display=swap" rel="stylesheet"><link rel="stylesheet" href="/static/site.css?v=2026091701"></head><body><div class="wrap"><header><img src="/static/donut.jpeg" alt="Princess Donut, the Queen Anne Chonk"><div><h1>Donut Coin</h1><p>Princess Donut, the Queen Anne Chonk. No value, all fun.</p></div></header><nav><a href="/">Explorer</a><a href="/wallet">Wallet</a><a href="/market">Market</a><a href="/download">Download</a><a href="/mine" aria-current="page">Get started</a><a href="/how">How it works</a><a href="/whitepaper">White paper</a><a href="/terms">Terms</a><a href="/privacy">Privacy</a><a href="https://askdonut.ai" target="_blank" rel="noopener">Ask her: askdonut.ai</a></nav><h2>Mine it, hold it, send it</h2>
+<div class="note">No terminal? The <a href="/wallet">web wallet</a> creates an account and lets you receive and send from any browser. Mining still needs the program below.</div>
+<p>Donut Coin is a small proof-of-work chain you can join with a laptop. Everything below is a plain Python program; you can read all of it. It earns you DONUT, which is worth nothing, on purpose.</p>
+<div class="note">You need Python 3.12 or newer and git. A wallet is one file only you can read. If you lose it, the coins in it are gone; nobody can restore it, including us.</div>
+<h3>The easy way</h3>
+<p><b>Mac or Linux</b>, in a terminal (needs Python 3.12+ and git; it creates a wallet and starts mining):</p>
+<pre>curl -fsSL https://donutcoin.meme/install.sh | bash</pre>
+<p><b>Windows</b>, in PowerShell (needs Python 3.12+ from python.org with "Add to PATH", and Git):</p>
+<pre>irm https://donutcoin.meme/install.ps1 | iex</pre>
+<p><b>No Python at all?</b> <a href="/download">Download a single file</a> for Mac, Windows or Linux and run it; it does the same thing. It is not signed, so the first open needs right-click &rarr; Open on a Mac, or "More info &rarr; Run anyway" on Windows.</p>
+<h3>The long way</h3>
+<h3>1. Get the code</h3>
+<pre>git clone https://github.com/nyc-esq/donutcoin
+cd donutcoin
+python3 -m venv .venv &amp;&amp; .venv/bin/pip install -r requirements.txt</pre>
+<h3>2. Make a wallet</h3>
+<pre>.venv/bin/python -m donutcoin.wallet new        # prints your address, which starts with D</pre>
+<p>The key is saved to <code>~/.donutcoin/wallet.json</code>. Back it up. Never paste it anywhere.</p>
+<h3>3. Mine</h3>
+<pre>.venv/bin/python -m donutcoin.miner --node https://donutcoin.meme --address D...yourAddress --threads 4 --tag yourname</pre>
+<p>Anyone may mine: the network accepts any block that passes every rule and has valid proof of work. It prints your hashrate every ten seconds and a line every time you find a block. A block pays 10,000 DONUT plus the fees of the transactions in it, spendable after three more blocks. The difficulty adjusts every ten blocks toward one block a minute, so your odds are your hashrate divided by the network&rsquo;s, which the <a href="/">explorer</a> shows.</p>
+<h3>4. Check and send</h3>
+<pre>.venv/bin/python -m donutcoin.wallet balance --node https://donutcoin.meme
+.venv/bin/python -m donutcoin.wallet send --to D...someoneElse --amount 250 --node https://donutcoin.meme</pre>
+<p>Sending signs the transaction on your machine and hands the network only the signed result. The default fee is 0.01 DONUT and goes to whoever mines the block.</p>
+<h3>Run your own node (optional)</h3>
+<pre>DONUTCOIN_PEERS=https://donutcoin.meme .venv/bin/python -m donutcoin.node    # explorer at http://localhost:8555</pre>
+<p>Your node pulls the chain from ours, checks every block itself, and keeps a full copy. The chain with the most work wins; nobody, including us, can hand a node an invalid block.</p><footer>Donut Coin is a hobby. It is not money, not an investment and not for sale. <a href="/terms">Terms</a> · <a href="/privacy">Privacy</a></footer></div></body></html>
