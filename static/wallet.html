@@ -1,0 +1,148 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="/static/donut.jpeg"><link rel="manifest" href="/static/manifest.webmanifest"><link rel="apple-touch-icon" href="/static/icons/icon-180.png"><meta name="theme-color" content="#f4b400"><title>Wallet · Donut Coin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700;9..144,800&display=swap" rel="stylesheet"><link rel="stylesheet" href="/static/site.css?v=2026091707"></head><body><div class="wrap">
+<header><img src="/static/donut.jpeg" alt="Princess Donut, the Queen Anne Chonk"><div><h1>Donut Coin wallet</h1><p>Your key never leaves this browser. Your password never leaves this browser.</p></div></header>
+<nav><a href="/">Explorer</a><a href="/wallet" aria-current="page">Wallet</a><a href="/market">Market</a><a href="/download">Download</a><a href="/mine">Get started</a><a href="/how">How it works</a><a href="/whitepaper">White paper</a><a class="ask" href="https://askdonut.ai" target="_blank" rel="noopener" title="Ask Princess Donut (no cocker spaniels)" aria-label="Ask Princess Donut at askdonut.ai"><svg viewBox="0 0 64 64" width="26" height="26" aria-hidden="true"><path fill="currentColor" d="M11 21C11 18 15 16 22 17C25 10 33 8 40 10C45 12 47 17 46 21C51 26 48 31 51 36C53 41 50 45 52 49C51 54 44 57 38 55C32 53 31 46 32 39C32 36 31 34 30 33C25 33 19 32 15 30C11 28 10 24 11 21Z"/><circle cx="12" cy="19.6" r="2.6" fill="currentColor"/><circle cx="27.5" cy="21" r="2" fill="var(--bg)"/><circle cx="32" cy="32" r="28" fill="none" stroke="#d92b2b" stroke-width="5"/><line x1="12.5" y1="12.5" x2="51.5" y2="51.5" stroke="#d92b2b" stroke-width="5" stroke-linecap="round"/></svg></a></nav>
+
+<section id="auth">
+ <div class="card"><h2>Log in</h2><form id="li-form" onsubmit="event.preventDefault();login()" autocomplete="on">
+  <label>Username</label><input id="li-user" name="username" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false">
+  <label>Password</label><input id="li-pass" name="password" type="password" autocomplete="current-password">
+  <button type="submit">Log in</button></form><div id="li-msg" class="msg"></div>
+  <div id="bio-login" style="display:none;margin-top:12px"><button class="quiet" onclick="bioUnlock()">Unlock with Face ID / fingerprint</button> <span id="bio-login-who" class="muted"></span></div><div class="muted" style="margin-top:8px">Your phone will offer to save this login. Say yes: with Face ID or fingerprint it fills itself next time.</div></div>
+ <div class="card"><h2>Create an account</h2><form id="re-form" onsubmit="event.preventDefault();register()" autocomplete="on">
+  <p class="muted">A new wallet key is generated here in your browser and locked with your password. The site stores only the locked copy, so <b>nobody can reset your password or recover your coins</b>. Write the password down.</p>
+  <label>Username (3-24 letters, digits, _)</label><input id="re-user" name="username" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false">
+  <label>Password (10+ characters)</label><input id="re-pass" name="new-password" type="password" autocomplete="new-password">
+  <label>Password again</label><input id="re-pass2" name="confirm-password" type="password" autocomplete="new-password">
+  <label>Email (optional; not verified, used for nothing yet)</label><input id="re-email" name="email" type="email" autocomplete="email">
+  <details><summary>Advanced: use a key I already have</summary><label>Private key (64 hex characters)</label><input id="re-key" class="mono" autocomplete="off"></details>
+  <button type="submit">Create account</button></form><div id="re-msg" class="msg"></div></div>
+</section>
+
+<section id="wallet" class="hide">
+ <div id="bio-offer" class="card" style="display:none;border-color:var(--gold)"><b>Use Face ID next time?</b> <span class="muted">One glance instead of the password, on this device only.</span><div class="row"><button onclick="bioToggle().then(()=>{document.getElementById('bio-offer').style.display='none'})">Yes, set up Face ID</button><button class="quiet" onclick="document.getElementById('bio-offer').style.display='none';sessionStorage.setItem('donut.bio.later','1')">Not now</button></div></div>
+ <div class="card"><div class="row" style="justify-content:space-between"><h2 id="who">Wallet</h2><button class="quiet" onclick="logout()">Log out</button></div>
+  <div class="big"><span id="bal">–</span> DONUT <span id="units" class="muted" style="font-size:14px;font-weight:400"></span></div><div class="muted"><span id="spend">–</span> spendable now · <span id="pend"></span></div></div>
+ <div class="card"><h2>Receive</h2><div class="row"><img id="qr" alt="QR code of your address"><div style="flex:1;min-width:240px"><div class="muted">Your address, or just tell people your username: anyone with a wallet can send to <b id="atname"></b>.</div><div id="addr" class="mono" style="word-break:break-all;font-size:14px;margin:6px 0"></div><button class="quiet" onclick="copyAddr()">Copy address</button><div class="muted" style="margin-top:10px">Mine into this account: <a href="/mine">install the miner</a> and run <code id="mineto"></code>. Every block you find lands here.</div></div></div>
+  <h3 style="margin:16px 0 4px;font-size:15px">Request an amount</h3><div class="muted">A link that opens the payer&rsquo;s wallet with everything filled in. Text it, or let them scan it.</div>
+  <div class="row"><input id="req-amt" inputmode="decimal" placeholder="amount in DONUT" style="max-width:200px"><button class="quiet" onclick="makeRequest()" style="margin-top:0">Make link</button></div>
+  <div id="req" class="row" style="display:none;margin-top:10px"><img id="req-qr" style="width:150px;height:150px;background:#fff;border-radius:10px;padding:6px" alt="QR of the payment link"><div style="flex:1;min-width:220px"><div id="req-link" class="mono" style="word-break:break-all;font-size:13px"></div><button class="quiet" onclick="copyReq()">Copy link</button> <a id="req-share" href="#" style="font-size:13px;margin-left:8px">Share…</a></div></div></div>
+ <div class="card"><h2>Send</h2>
+  <label>To: a @username, or a wallet address (the long code starting with D)</label><input id="to" class="mono" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="@mongo" oninput="peek()"><div id="to-peek" class="muted"></div>
+  <label>Amount (DONUT)</label><input id="amt" inputmode="decimal" placeholder="e.g. 250">
+  <label>Fee (DONUT, goes to the miner)</label><input id="fee" inputmode="decimal" value="0.01">
+  <button id="sendbtn" onclick="send()">Send</button><div id="send-msg" class="msg"></div></div>
+ <div class="card"><h2>History</h2><table><tbody id="hist"><tr><td class="muted">Nothing yet.</td></tr></tbody></table></div>
+ <div class="card"><h2>Face ID / fingerprint unlock</h2><div class="muted">Seal this wallet's key on this device behind a passkey. Next time, one glance opens it: no password. The key stays on this phone, encrypted; the site learns nothing. Needs iOS 18+ or a recent Android, and the passkey must be saved to <b>iCloud Keychain</b> (or Google Password Manager), not a third-party manager like 1Password, which cannot provide the secret this relies on.</div>
+  <div class="row"><button id="biobtn" class="quiet" onclick="bioToggle()" style="margin-top:8px">Set up Face ID unlock</button><span id="bio-state" class="muted"></span></div></div>
+ <div class="card"><h2>Notifications</h2><div class="muted">Get a buzz when coins arrive, an offer is taken, a buyer says they paid, or a trade completes. On iPhone, first add this page to your Home Screen (Share, then Add to Home Screen) and open it from there.</div>
+  <div class="row"><button id="pushbtn" onclick="enablePush()" class="quiet" style="margin-top:8px">Enable notifications</button><button class="quiet" onclick="testPush()" style="margin-top:8px">Send me a test</button><span id="push-state" class="muted"></span></div></div>
+ <div class="card"><details><summary>Account settings: rename or change password</summary>
+  <label>Current password (required)</label><input id="cp-old" type="password" autocomplete="current-password">
+  <label>New username (leave blank to keep)</label><input id="cp-user" autocomplete="username" autocapitalize="none">
+  <label>New password (leave blank to keep)</label><input id="cp-new" type="password" autocomplete="new-password">
+  <label>New password again</label><input id="cp-new2" type="password" autocomplete="new-password">
+  <label>Email (optional; leave blank to keep, type "none" to remove)</label><input id="cp-email" type="email" autocomplete="email">
+  <button onclick="updateAccount()">Save changes</button><div id="cp-msg" class="msg"></div></details></div>
+ <div class="card"><details><summary>Export my private key (careful)</summary><div class="warn">Anyone who sees this key owns your coins. Only use it to move the wallet to another program.</div><button class="quiet" onclick="exportKey()">Show key</button><div id="expkey" class="mono" style="word-break:break-all;margin-top:8px"></div></details></div>
+</section>
+<footer class="muted" style="margin-top:20px">Not money, not an investment, not for sale. Amounts above 90,000,000 DONUT display approximately in a browser; the chain itself is exact.<div class="footlinks"><a href="/terms">Terms</a><a href="/privacy">Privacy</a><a href="/source">Source</a><a href="https://askdonut.ai" target="_blank" rel="noopener">Ask her: askdonut.ai</a></div></footer>
+</div>
+<script type="module">
+import * as secp from '/static/vendor/secp256k1.js';
+import {COIN,enc,dec,hex,unhex,b64,unb64,sha256,sha256d,b58encode,address,derive,lock,unlock,api,fmt,session,signed} from '/static/core.js?v=202609162249';
+const $=id=>document.getElementById(id);
+const show=(id,ok,text)=>{const m=$(id);m.className='msg '+(ok?'ok':'bad');m.textContent=text};
+let me=null, timer=null;
+const saved=session.get(); if(saved) setTimeout(()=>enter(saved),0); setTimeout(bioRefresh,0);
+
+window.register=async()=>{try{
+ const u=$('re-user').value.trim().toLowerCase(), p=$('re-pass').value;
+ if(!/^[a-z0-9_]{3,24}$/.test(u))throw new Error('username: 3-24 of a-z 0-9 _');
+ if(p.length<10)throw new Error('password: 10 characters or more'); if(p!==$('re-pass2').value)throw new Error('passwords differ');
+ let priv=$('re-key').value.trim(); if(priv&&!/^[0-9a-f]{64}$/i.test(priv))throw new Error('private key must be 64 hex characters'); if(!priv)priv=hex(secp.utils.randomPrivateKey());
+ const pub=secp.getPublicKey(unhex(priv),true), addr=await address(pub);
+ const {salt}=await api('/api/account/salt/'+u); const {encKey,auth}=await derive(p,salt);
+ await api('/api/account/register',{username:u,auth,blob:await lock(encKey,priv),address:addr,email:$('re-email').value.trim()});
+ enter({username:u,priv,pub:hex(pub),address:addr},true); }catch(e){show('re-msg',false,e.message)}};
+window.login=async()=>{try{
+ const u=$('li-user').value.trim().toLowerCase(), p=$('li-pass').value;
+ const {salt}=await api('/api/account/salt/'+u); const {encKey,auth}=await derive(p,salt);
+ const d=await api('/api/account/login',{username:u,auth}); const priv=await unlock(encKey,d.blob);
+ const pub=secp.getPublicKey(unhex(priv),true), addr=await address(pub); if(addr!==d.address)throw new Error('key does not match the stored address');
+ enter({username:u,priv,pub:hex(pub),address:addr},true); }catch(e){show('li-msg',false,e.message==='OperationError'?'wrong name or password':e.message)}};
+function enter(w,viaPassword){me=w;session.set(w);
+ try{const b=bioGet();$('bio-offer').style.display=(viaPassword&&window.PublicKeyCredential&&!(b&&b.username===w.username)&&!sessionStorage.getItem('donut.bio.later'))?'block':'none'}catch{}try{const h=new URLSearchParams(location.hash.slice(1));if(h.get('send')){$('to').value=h.get('send');$('amt').value=h.get('amount')||'';setTimeout(()=>peek(),0);}}catch{}$('auth').classList.add('hide');$('wallet').classList.remove('hide');$('who').textContent='@'+w.username;$('atname').textContent='@'+w.username;$('mineto').textContent='donutcoin start --to @'+w.username;pushState();bioRefresh();$('addr').textContent=w.address;$('qr').src='/api/qr/'+w.address+'.svg';$('li-pass').value=$('re-pass').value=$('re-pass2').value='';refresh();timer=setInterval(refresh,10000)}
+window.logout=()=>{me=null;session.set(null);clearInterval(timer);$('wallet').classList.add('hide');$('auth').classList.remove('hide');$('expkey').textContent=''};
+window.copyAddr=()=>navigator.clipboard.writeText(me.address);
+window.makeRequest=()=>{const a=parseFloat($('req-amt').value);const link=`https://donutcoin.meme/pay/@${me.username}${a>0?'?amount='+a:''}`;$('req').style.display='flex';$('req-link').textContent=link;$('req-qr').src='/api/qr-link.svg?text='+encodeURIComponent(link);$('req-share').onclick=e=>{e.preventDefault();if(navigator.share)navigator.share({title:'Pay me in Donut Coin',text:`Please send ${a>0?a+' ':''}DONUT`,url:link});else navigator.clipboard.writeText(link)}};
+window.copyReq=()=>navigator.clipboard.writeText($('req-link').textContent);
+async function pushState(){const st=$('push-state');if(!('serviceWorker' in navigator)||!('PushManager' in window)){st.textContent='not supported in this browser';$('pushbtn').disabled=true;return}
+ const reg=await navigator.serviceWorker.register('/sw.js',{scope:'/'}).catch(()=>null);const sub=reg&&await reg.pushManager.getSubscription();
+ let registered=0;try{registered=(await api('/api/push/status/'+me.username)).registered}catch{}
+ if(sub&&!registered){try{await api('/api/push/subscribe',await signed(me,{username:me.username,subscription:sub.toJSON()}));registered=1}catch(e){}}   // the phone has it, the server lost it: re-register
+ st.textContent=sub?(registered?'on for this device, registered with the server':'on this device but the server refused it'):(Notification.permission==='denied'?'blocked in browser settings':'off');$('pushbtn').textContent=sub?'Turn off on this device':'Enable notifications';$('pushbtn').dataset.on=sub?'1':''}
+window.testPush=async()=>{try{const r=await api('/api/push/test',await signed(me,{username:me.username}));$('push-state').textContent=r.sent?`test sent to ${r.sent} device${r.sent===1?'':'s'}`:(r.registered?'registered, but the push service rejected it; see the node log':'no device registered: enable notifications first')}catch(e){$('push-state').textContent=e.message}};
+window.enablePush=async()=>{try{const reg=await navigator.serviceWorker.register('/sw.js',{scope:'/'});await navigator.serviceWorker.ready;
+ if($('pushbtn').dataset.on){const sub=await reg.pushManager.getSubscription();if(sub){await api('/api/push/unsubscribe',await signed(me,{username:me.username,endpoint:sub.endpoint}));await sub.unsubscribe()}await pushState();return}
+ if(await Notification.requestPermission()!=='granted')throw new Error('permission not granted');
+ const {key}=await api('/api/push/key');const raw=Uint8Array.from(atob(key.replace(/-/g,'+').replace(/_/g,'/').padEnd(key.length+(4-key.length%4)%4,'=')),c=>c.charCodeAt(0));
+ const sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:raw});
+ await api('/api/push/subscribe',await signed(me,{username:me.username,subscription:sub.toJSON()}));await pushState()}catch(e){$('push-state').textContent=e.message}};
+// --- Face ID / fingerprint unlock: a passkey with the PRF extension gives a device-bound secret;
+// the wallet key is sealed with it in localStorage. Nothing leaves the device.
+const BIO='donut.bio'; const bioGet=()=>{try{return JSON.parse(localStorage.getItem(BIO)||'null')}catch{return null}};
+const rnd=n=>crypto.getRandomValues(new Uint8Array(n));
+async function prfKey(secret){return crypto.subtle.importKey('raw',new Uint8Array(secret).slice(0,32),'AES-GCM',false,['encrypt','decrypt'])}
+function bioRefresh(){const b=bioGet();const ok=!!(window.PublicKeyCredential);$('bio-login').style.display=b&&ok?'block':'none';if(b)$('bio-login-who').textContent='@'+b.username;
+ if(me){$('biobtn').textContent=b&&b.username===me.username?'Turn off Face ID unlock on this device':'Set up Face ID unlock';$('bio-state').textContent=ok?(b&&b.username===me.username?'on for this device':''):'not supported in this browser';$('biobtn').disabled=!ok}}
+window.bioToggle=async()=>{try{const b=bioGet();
+ if(b&&b.username===me.username){localStorage.removeItem(BIO);bioRefresh();$('bio-state').textContent='off (the passkey itself can be removed in Settings > Passwords)';return}
+ const salt=rnd(32), userId=rnd(16);
+ const cred=await navigator.credentials.create({publicKey:{challenge:rnd(32),rp:{id:location.hostname,name:'Donut Coin'},user:{id:userId,name:me.username,displayName:'@'+me.username+' · Donut Coin'},
+  pubKeyCredParams:[{type:'public-key',alg:-7},{type:'public-key',alg:-257}],authenticatorSelection:{authenticatorAttachment:'platform',residentKey:'required',userVerification:'required'},extensions:{prf:{eval:{first:salt}}},timeout:60000}});
+ let ext=cred.getClientExtensionResults(); let secret=ext.prf&&ext.prf.results&&ext.prf.results.first;
+ if(!(ext.prf&&(ext.prf.enabled||secret))) throw new Error('this device does not support the passkey secret needed (iOS 18+ / recent Android)');
+ if(!secret){ // some platforms only return the secret on a follow-up assertion
+  const a=await navigator.credentials.get({publicKey:{challenge:rnd(32),rpId:location.hostname,allowCredentials:[{type:'public-key',id:cred.rawId}],userVerification:'required',extensions:{prf:{eval:{first:salt}}}}});
+  secret=a.getClientExtensionResults().prf.results.first}
+ const k=await prfKey(secret); const iv=rnd(12); const ct=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv},k,enc.encode(JSON.stringify({k:me.priv}))));
+ localStorage.setItem(BIO,JSON.stringify({username:me.username,credId:b64(new Uint8Array(cred.rawId)),salt:b64(salt),iv:b64(iv),ct:b64(ct)}));bioRefresh();$('bio-state').textContent='on for this device';
+ }catch(e){$('bio-state').textContent=e.name==='NotAllowedError'?'cancelled':e.message}};
+window.bioUnlock=async()=>{try{const b=bioGet();if(!b)return;
+ const a=await navigator.credentials.get({publicKey:{challenge:rnd(32),rpId:location.hostname,allowCredentials:[{type:'public-key',id:unb64(b.credId)}],userVerification:'required',extensions:{prf:{eval:{first:unb64(b.salt)}}},timeout:60000}});
+ const secret=a.getClientExtensionResults().prf&&a.getClientExtensionResults().prf.results.first; if(!secret)throw new Error('no passkey secret returned');
+ const k=await prfKey(secret); const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:unb64(b.iv)},k,unb64(b.ct)); const priv=JSON.parse(dec.decode(pt)).k;
+ const pub=secp.getPublicKey(unhex(priv),true); enter({username:b.username,priv,pub:hex(pub),address:await address(pub)});
+ }catch(e){show('li-msg',false,e.name==='NotAllowedError'?'cancelled':('Face ID unlock failed: '+e.message))}};
+let peekTimer=null; window.peek=()=>{clearTimeout(peekTimer);const v=$('to').value.trim();$('to-peek').textContent='';if(!(v.startsWith('@')||/^[a-z0-9_]{3,24}$/i.test(v)))return;peekTimer=setTimeout(async()=>{try{const r=await api('/api/account/address/'+v.replace(/^@/,'').toLowerCase());$('to-peek').textContent=`@${r.username} = ${r.address}`}catch(e){$('to-peek').textContent=e.message}},350)};
+window.updateAccount=async()=>{try{
+ const old=$('cp-old').value, nu=$('cp-user').value.trim().toLowerCase(), np=$('cp-new').value;
+ if(!old)throw new Error('enter your current password'); if(nu&&!/^[a-z0-9_]{3,24}$/.test(nu))throw new Error('username: 3-24 of a-z 0-9 _');
+ if(np&&np.length<10)throw new Error('new password: 10 characters or more'); if(np&&np!==$('cp-new2').value)throw new Error('new passwords differ'); const em=$('cp-email').value.trim(); if(!nu&&!np&&!em)throw new Error('nothing to change');
+ const {salt}=await api('/api/account/salt/'+me.username); const cur=await derive(old,salt);
+ const body={username:me.username,auth:cur.auth}; const targetUser=nu||me.username, targetPass=np||old;
+ // the salt is per name and the blob is locked per password, so any change re-locks the key
+ const {salt:ns}=await api('/api/account/salt/'+targetUser); const nk=await derive(targetPass,ns);
+ body.new_username=targetUser; body.new_auth=nk.auth; body.new_blob=await lock(nk.encKey,me.priv); if(em)body.email=(em.toLowerCase()==='none'?'':em);
+ await api('/api/account/update',body); me.username=targetUser; $('who').textContent='@'+targetUser;
+ $('cp-old').value=$('cp-user').value=$('cp-new').value=$('cp-new2').value=$('cp-email').value=''; show('cp-msg',true,'Saved. Log in as @'+targetUser+' from now on.');
+ }catch(e){show('cp-msg',false,e.message==='OperationError'?'wrong current password':e.message)}};
+window.exportKey=()=>{$('expkey').textContent=me.priv};
+async function refresh(){if(!me)return;try{const d=await api('/api/address/'+me.address);const sp=d.spendable.reduce((s,u)=>s+u.amount,0);$('bal').textContent=fmt(d.balance);$('units').textContent=(()=>{for(const [k,name] of [[1e8,'Chonk'],[1e7,'Tiara'],[1e6,'Ribbon']]){if(d.balance>=k*COIN){const v=d.balance/(k*COIN);return '= '+v.toLocaleString(undefined,{maximumFractionDigits:2})+' '+name+(v===1?'':'s')}}return ''})();$('spend').textContent=fmt(sp);$('pend').textContent=d.balance>sp?fmt(d.balance-sp)+' maturing':'';
+ $('hist').innerHTML=d.recent.length?d.recent.map(t=>`<tr><td>block ${t.height}</td><td>${t.coinbase?'mined':t.spent_from?'sent':'received'}</td><td>${(t.net>=0?'+':'−')+fmt(Math.abs(t.net))}</td><td class="mono muted">${t.txid.slice(0,12)}…</td></tr>`).join(''):'<tr><td class="muted">Nothing yet.</td></tr>'}catch(e){}}
+window.send=async()=>{const btn=$('sendbtn');try{btn.disabled=true;
+ let to=$('to').value.trim(), amount=Math.round(parseFloat($('amt').value)*COIN), fee=Math.round(parseFloat($('fee').value||'0')*COIN); let toName='';
+ if(to.startsWith('@')||/^[a-z0-9_]{3,24}$/i.test(to)){const r=await api('/api/account/address/'+to.replace(/^@/,'').toLowerCase());toName='@'+r.username;to=r.address}
+ if(!/^D[1-9A-HJ-NP-Za-km-z]{25,40}$/.test(to))throw new Error('that is not a Donut Coin address or a known @username');
+ if(toName&&!confirm(`Send ${fmt(amount)} DONUT to ${toName} (${to.slice(0,10)}…)?`))throw new Error('cancelled'); if(!(amount>0))throw new Error('amount must be positive'); if(!(fee>=0))throw new Error('bad fee');
+ const d=await api('/api/address/'+me.address); const utxos=d.spendable.sort((a,b)=>b.amount-a.amount); let total=0,chosen=[];
+ for(const u of utxos){chosen.push(u);total+=u.amount;if(total>=amount+fee)break} if(total<amount+fee)throw new Error('not enough spendable DONUT ('+fmt(total)+')');
+ const outputs=[[amount,to]]; if(total-amount-fee>0)outputs.push([total-amount-fee,me.address]);
+ const payload={inputs:chosen.map(u=>[u.txid,u.index]),outputs,coinbase:false,height:0,extra:''};
+ const digest=await sha256d(enc.encode(JSON.stringify(payload)));
+ const sig=(await secp.signAsync(digest,unhex(me.priv))).toCompactHex();
+ const tx={inputs:chosen.map(u=>({txid:u.txid,index:u.index,pubkey:me.pub,signature:sig})),outputs:outputs.map(o=>({amount:o[0],address:o[1]})),coinbase:false,height:0,extra:''};
+ const r=await api('/api/tx',tx); show('send-msg',true,'Sent. It will confirm in the next block (about a minute). Transaction '+r.txid.slice(0,16)+'…'); $('to').value='';$('amt').value='';
+ }catch(e){show('send-msg',false,e.message)}finally{btn.disabled=false}};
+</script></body></html>
