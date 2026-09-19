@@ -1,0 +1,105 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="/static/donut.png"><link rel="manifest" href="/static/manifest.webmanifest"><link rel="apple-touch-icon" href="/static/icons/icon-180.png"><meta name="theme-color" content="#f4b400"><title>Market · Donut Coin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700;9..144,800&display=swap" rel="stylesheet"><link rel="stylesheet" href="/static/site.css?v=0774e3e585"><script>try{var t=localStorage.getItem('donut.theme');if(t)document.documentElement.dataset.theme=t}catch(e){}</script></head><body><div class="wrap">
+<header><img src="/static/donut.png" alt="Princess Donut, the Queen Anne Chonk"><div><h1>Donut Coin market</h1><p>Buy and sell DONUT with people, for Apple Cash or Cash App. Nobody in the middle.</p></div></header>
+<nav><a href="/">Explorer</a><a href="/wallet">Wallet</a><a href="/notes">Notes</a><a href="/market" aria-current="page">Market</a><a href="/download">Download</a><a href="/mine">Get started</a><a href="/how">How it works</a><a href="/whitepaper">White paper</a><button type="button" class="themetoggle" onclick="flipTheme()" title="Day or night" aria-label="Switch between day and night"><svg class="i-moon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M21 13.2A9 9 0 1 1 10.8 3a7.2 7.2 0 0 0 10.2 10.2Z"/></svg><svg class="i-sun" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.4v2.2M12 19.4v2.2M4.2 12H2M22 12h-2.2M5.6 5.6 4 4M20 20l-1.6-1.6M18.4 5.6 20 4M4 20l1.6-1.6"/></svg></button><a class="x" href="https://x.com/askdonutai" target="_blank" rel="noopener" title="@askdonutai on X" aria-label="Donut on X, @askdonutai"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a><a class="ask" href="https://askdonut.ai" target="_blank" rel="noopener" title="Ask Princess Donut (no cocker spaniels)" aria-label="Ask Princess Donut at askdonut.ai"><svg viewBox="0 0 64 64" width="26" height="26" aria-hidden="true"><path fill="currentColor" d="M11 21C11 18 15 16 22 17C25 10 33 8 40 10C45 12 47 17 46 21C51 26 48 31 51 36C53 41 50 45 52 49C51 54 44 57 38 55C32 53 31 46 32 39C32 36 31 34 30 33C25 33 19 32 15 30C11 28 10 24 11 21Z"/><circle cx="12" cy="19.6" r="2.6" fill="currentColor"/><circle cx="27.5" cy="21" r="2" fill="var(--bg)"/><circle cx="32" cy="32" r="28" fill="none" stroke="#d92b2b" stroke-width="5"/><line x1="12.5" y1="12.5" x2="51.5" y2="51.5" stroke="#d92b2b" stroke-width="5" stroke-linecap="round"/></svg></a></nav>
+
+<div class="pricebar" id="pricebar"><span class="muted">Last trade</span><b id="p-usd">–</b><span class="muted">per DONUT</span><b id="p-tiara">–</b><span class="muted">per Ribbon (1,000,000 DONUT)</span><span id="p-doge" class="muted"></span></div>
+<svg id="spark" class="spark" viewBox="0 0 800 60" preserveAspectRatio="none" style="display:none"></svg>
+
+<div id="login" class="card" style="display:none"><h2>Log in to trade</h2><form onsubmit="event.preventDefault();doLogin()" autocomplete="on">
+ <label>Username</label><input id="li-user" name="username" autocomplete="username" autocapitalize="none"><label>Password</label><input id="li-pass" name="password" type="password" autocomplete="current-password">
+ <div class="row" style="margin-top:12px"><button type="submit">Log in</button><button type="button" class="quiet" id="li-bio" style="display:none" onclick="bioUnlock()">Unlock with Face ID</button><a href="/wallet" class="muted">No account? Make one in the wallet.</a></div></form><div id="li-msg" class="msg"></div></div>
+<div id="who" class="muted" style="margin:6px 0"></div>
+
+<div class="tabs"><button id="tab-buy" onclick="setTab('buy')">Buy DONUT</button><button id="tab-sell" class="off" onclick="setTab('sell')">Sell DONUT</button></div>
+
+<div id="mine-card" class="card" style="display:none"><h2>Your trades</h2><div id="mine"></div></div>
+
+<div id="pane-buy" class="card"><h2>People selling</h2><div id="sells"><div class="muted">Loading…</div></div>
+ <details style="margin-top:12px"><summary>Nothing right? Post what you want to buy</summary>
+  <label>How much DONUT you want</label><input id="b-amt" inputmode="decimal" placeholder="e.g. 10000 (one block's worth)">
+  <label>What you will pay for it, in dollars</label><input id="b-price" inputmode="decimal" placeholder="e.g. 10">
+  <label>How you will pay</label><select id="b-method"><option value="apple_cash">Apple Cash</option><option value="cash_app">Cash App</option></select>
+  <label>Note (optional)</label><input id="b-note" maxlength="140"><button onclick="post('buy')" style="margin-top:12px">Post request</button><div id="b-msg" class="msg"></div></details></div>
+
+<div id="pane-sell" class="card" style="display:none"><h2>People wanting to buy</h2><div id="buys"><div class="muted">Loading…</div></div>
+ <details style="margin-top:12px" open><summary>Post an offer to sell</summary>
+  <label>How much DONUT</label><input id="s-amt" inputmode="decimal" placeholder="e.g. 10000 (one block's worth)">
+  <label>Price for the whole lot, in dollars</label><input id="s-price" inputmode="decimal" placeholder="e.g. 10"><div id="s-hint" class="muted"></div>
+  <label>How the buyer pays you</label><select id="s-method" onchange="methodHint()"><option value="apple_cash">Apple Cash</option><option value="cash_app">Cash App</option></select>
+  <label id="s-contact-label">Your Apple Cash phone number or email. Shown only to a buyer who takes the offer.</label><input id="s-contact" placeholder="+1 555 555 0100 or you@icloud.com">
+  <label>Note (optional)</label><input id="s-note" maxlength="140"><button onclick="post('sell')" style="margin-top:12px">Post offer</button><div id="s-msg" class="msg"></div></details></div>
+
+<div class="card"><details><summary><b>How it works</b> (30 seconds)</summary><ol style="padding-left:18px;font-size:14px">
+ <li>A seller posts an offer, or a buyer posts a request. Everything is signed by the poster&rsquo;s wallet, so nobody can post as someone else.</li>
+ <li>Someone takes it. The buyer gets the seller&rsquo;s Apple Cash or Cash App contact and a trade code; the seller gets told to wait for the money.</li>
+ <li>The buyer pays in that app with the code in the note, and taps <b>I paid</b>. The seller checks, then sends the DONUT from their wallet with one tap.</li>
+ <li>When the coins land on the chain, the tracker counts 21 confirmations (about 21 minutes, past the chain&rsquo;s reorg cap) and then the trade completes itself and both people&rsquo;s trade counts go up. Turn on notifications in your <a href="/wallet">wallet</a> and your phone buzzes at each step.</li>
+ <li>The site never holds coins or money. Someone always goes first, so start small with strangers and look at their count.</li></ol></details></div>
+<footer class="muted" style="margin-top:20px">Not money, not an investment. The site verifies the DONUT leg on the chain and nothing about the payment leg.<div class="footlinks"><a href="/terms">Terms</a><a href="/privacy">Privacy</a><a href="/source">Source</a><a href="https://askdonut.ai" target="_blank" rel="noopener">Ask her: askdonut.ai</a><a href="https://mattdinniman.com" target="_blank" rel="noopener">All Hail Matt Dinniman</a></div></footer>
+</div>
+<script type="module">
+import * as secp from '/static/vendor/secp256k1.js';
+import {COIN,enc,dec,hex,unhex,unb64,address,derive,unlock,api,fmt,signed,session} from '/static/core.js?v=202609162249';
+const $=id=>document.getElementById(id); let me=session.get(), data=null, tab='buy';
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const usd=c=>'$'+(c/100).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+const perD=o=>o.price_cents/100/(o.amount/COIN);
+const UNITS=[[1e9,'Queen'],[1e8,'Crown'],[1e7,'Tiara'],[1e6,'Ribbon']];
+const units=a=>{for(const [n,name] of UNITS){if(a>=n*COIN){const v=a/(n*COIN);return v.toLocaleString(undefined,{maximumFractionDigits:2})+' '+name+(v===1?'':'s')}}return fmt(a)+' DONUT'};
+const tiaras=units;
+const who=(name,addr)=>name?'<b>@'+esc(name)+'</b>':addr?'<span class="mono">'+addr.slice(0,8)+'…</span>':'?';
+const rep=r=>r?`${r.sold+r.bought} trade${r.sold+r.bought===1?'':'s'}`:'';
+const show=(id,ok,t)=>{const m=$(id);m.className='msg '+(ok?'ok':'bad');m.textContent=t};
+window.setTab=t=>{tab=t;$('pane-buy').style.display=t==='buy'?'block':'none';$('pane-sell').style.display=t==='sell'?'block':'none';$('tab-buy').className=t==='buy'?'':'off';$('tab-sell').className=t==='sell'?'':'off';try{localStorage.setItem('donut.market.tab',t)}catch{}};
+function header(){const b=(()=>{try{return JSON.parse(localStorage.getItem('donut.bio')||'null')}catch{return null}})();
+ $('login').style.display=me?'none':'block';$('li-bio').style.display=(!me&&b&&window.PublicKeyCredential)?'inline-block':'none';
+ $('who').innerHTML=me?`Trading as <b>@${esc(me.username)}</b> · <a href="/wallet">wallet</a> · <a href="#" onclick="event.preventDefault();logout()">log out</a>`:'';$('mine-card').style.display=me?'block':'none'}
+window.logout=()=>{me=null;session.set(null);header();refresh()};
+window.doLogin=async()=>{try{const u=$('li-user').value.trim().toLowerCase(),p=$('li-pass').value;const {salt}=await api('/api/account/salt/'+u);const {encKey,auth}=await derive(p,salt);const d=await api('/api/account/login',{username:u,auth});const priv=await unlock(encKey,d.blob);const pub=secp.getPublicKey(unhex(priv),true);
+ me={username:u,priv,pub:hex(pub),address:await address(pub)};session.set(me);$('li-pass').value='';header();refresh()}catch(e){show('li-msg',false,e.message==='OperationError'?'wrong name or password':e.message)}};
+window.bioUnlock=async()=>{try{const b=JSON.parse(localStorage.getItem('donut.bio'));const a=await navigator.credentials.get({publicKey:{challenge:crypto.getRandomValues(new Uint8Array(32)),rpId:location.hostname,allowCredentials:[{type:'public-key',id:unb64(b.credId)}],userVerification:'required',extensions:{prf:{eval:{first:unb64(b.salt)}}}}});
+ const secret=a.getClientExtensionResults().prf.results.first;const k=await crypto.subtle.importKey('raw',new Uint8Array(secret).slice(0,32),'AES-GCM',false,['decrypt']);const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:unb64(b.iv)},k,unb64(b.ct));const priv=JSON.parse(dec.decode(pt)).k;const pub=secp.getPublicKey(unhex(priv),true);
+ me={username:b.username,priv,pub:hex(pub),address:await address(pub)};session.set(me);header();refresh()}catch(e){show('li-msg',false,e.name==='NotAllowedError'?'cancelled':'Face ID unlock failed: '+e.message)}};
+function priceBar(p){if(!p)return;const lt=p.last_trade;if(lt){const c=lt.cents_per_donut;$('p-usd').textContent='$'+(c/100).toLocaleString(undefined,{maximumSignificantDigits:3});$('p-tiara').textContent='$'+(c*1e6/100).toLocaleString(undefined,{maximumFractionDigits:0});
+  $('p-doge').textContent=p.doge_usd?`≈ ${(c/100/p.doge_usd*1e6).toLocaleString(undefined,{maximumSignificantDigits:3})} DOGE per Ribbon (Doge at $${p.doge_usd})`:'';$('s-hint').textContent='Last trade was '+usd(c*1e4)+' per 10,000 DONUT.'}
+ else{$('p-usd').textContent='no trades yet';$('p-tiara').textContent='–';$('p-doge').textContent=p.doge_usd?`Doge is at $${p.doge_usd}; the first completed trade sets the DONUT price.`:''}
+ const pts=p.points||[];const sv=$('spark');if(pts.length>1&&p.doge_usd){sv.style.display='block';const ys=pts.map(q=>q.cents_per_donut/100/p.doge_usd*1e6);const lo=Math.min(...ys),hi=Math.max(...ys)||1;const path=ys.map((y,i)=>`${i?'L':'M'}${(i/(ys.length-1)*790+5).toFixed(1)},${(55-(y-lo)/((hi-lo)||1)*50).toFixed(1)}`).join(' ');
+  sv.innerHTML=`<path d="${path}" fill="none" stroke="#ff9e64" stroke-width="2"/><text x="6" y="12" font-size="10" fill="#7a6a5c">DOGE per Ribbon, last ${pts.length} trades: ${lo.toPrecision(3)} to ${hi.toPrecision(3)}</text>`}else sv.style.display='none'}
+function card(o){const mineSide=me&&(o.poster===me.address);
+ if(o.side==='sell')return `<div class="offer"><div><div class="price">${usd(o.price_cents)} <span class="muted" style="font-size:13px">for ${tiaras(o.amount)}</span></div><div class="lot">${fmt(o.amount)} DONUT · $${perD(o).toLocaleString(undefined,{maximumSignificantDigits:3})} each · ${data.methods[o.method]}</div><div class="muted">from ${who(o.seller_name,o.seller)} · ${rep(o.poster_rep)}${o.seller_can_cover===false?' · <b>balance no longer covers this</b>':''}${o.note?' · '+esc(o.note):''}</div></div>
+  <div>${me&&!mineSide?`<button onclick="take('${o.id}')">Buy for ${usd(o.price_cents)}</button>`:mineSide?`<button class="quiet" onclick="cancelOffer('${o.id}')">Withdraw</button>`:`<a href="#login"><button class="quiet">Log in to buy</button></a>`}</div></div>`;
+ return `<div class="offer"><div><div class="price">${usd(o.price_cents)} <span class="muted" style="font-size:13px">offered for ${tiaras(o.amount)}</span></div><div class="lot">${fmt(o.amount)} DONUT wanted · $${perD(o).toLocaleString(undefined,{maximumSignificantDigits:3})} each · pays by ${data.methods[o.method]}</div><div class="muted">from ${who(o.buyer_name,o.buyer)} · ${rep(o.poster_rep)}${o.note?' · '+esc(o.note):''}</div></div>
+  <div>${me&&!mineSide?`<button onclick="takeBuy('${o.id}','${o.method}')">Sell for ${usd(o.price_cents)}</button>`:mineSide?`<button class="quiet" onclick="cancelOffer('${o.id}')">Withdraw</button>`:`<a href="#login"><button class="quiet">Log in to sell</button></a>`}</div></div>`}
+function tracker(o){const s=o.status;const landed=s==='paid'&&o.settling_height;const st=['Pay','Send','Settle','Done'];const idx=s==='taken'?0:(s==='paid'&&!landed)?1:landed?2:s==='complete'?4:-1;
+ const label=(n,i)=>i===2&&landed?`Settle ${Math.min(o.confirmations,o.settle_needed)} of ${o.settle_needed}`:n;
+ return `<div class="steps">${st.map((n,i)=>`<div class="step ${i<idx?'done':i===idx?'now':''}">${i<idx?'✓ ':''}${label(n,i)}</div>`).join('')}</div>`}
+function trade(o){const seller=o.seller===me.address; const amt=(o.price_cents/100).toFixed(2); const other=seller?who(o.buyer_name,o.buyer):who(o.seller_name,o.seller);
+ let body='';
+ if(o.status==='open')body=`<div class="act wait">Waiting for someone to take it.</div>`;
+ else if(o.status==='taken'&&!seller){const c=String(o.contact||''),phone=/^[+0-9() .-]{7,}$/.test(c),msg=`${o.code} — $${amt} for ${fmt(o.amount)} DONUT`;
+  body=`<div class="act">Pay <b>$${amt}</b> to ${other} by <b>${data.methods[o.method]}</b>${c?` at <b>${esc(c)}</b>`:''}, with <b class="mono">${o.code}</b> in the note. ${o.method==='cash_app'?`<a href="https://cash.app/$${encodeURIComponent(c.replace(/^\\$/,''))}/${amt}" target="_blank" rel="noopener"><button>Open Cash App</button></a>`:phone?`<a href="sms:${encodeURIComponent(c.replace(/[^+0-9]/g,''))}?&body=${encodeURIComponent(msg)}"><button>Open Messages</button></a> then tap the Apple Cash button there.`:''} <button class="quiet" onclick="navigator.clipboard.writeText('${o.code}')">Copy code</button></div><div class="row"><button onclick="paid('${o.id}')">I paid</button><button class="quiet" onclick="cancelOffer('${o.id}')">Back out</button></div>`}
+ else if(o.status==='taken'&&seller)body=`<div class="act wait">${other} is paying <b>$${amt}</b> by ${data.methods[o.method]} with code <span class="mono">${o.code}</span>. Wait for the money before sending anything.${o.side==='sell'?'':''}</div>`;
+ else if(o.status==='paid'&&o.settling_height)body=`<div class="act wait">The ${fmt(o.amount)} DONUT landed in block ${o.settling_height}. Settling: <b>${Math.min(o.confirmations,o.settle_needed)} of ${o.settle_needed}</b> confirmations, about ${Math.max(0,o.settle_needed-o.confirmations)} min to go. The trade completes itself when the coins are too deep for any reorg to touch.</div>`;
+ else if(o.status==='paid'&&seller)body=`<div class="act">${other} says they paid <b>$${amt}</b>, code <b class="mono">${o.code}</b>. Check ${data.methods[o.method]}. Then send <b>${fmt(o.amount)} DONUT</b> with one tap: <a href="/wallet#send=${o.buyer}&amount=${o.amount/COIN}"><button>Send ${tiaras(o.amount)} now</button></a></div>`;
+ else if(o.status==='paid'&&!seller)body=`<div class="act wait">You said you paid. Waiting for ${other} to send ${fmt(o.amount)} DONUT.</div>`;
+ else if(o.status==='complete')body=`<div class="act wait">Done. Transaction <span class="mono">${(o.complete_txid||'').slice(0,16)}…</span></div>`;
+ else body=`<div class="act wait">Cancelled.</div>`;
+ return `<div class="offer" style="display:block"><div class="row" style="justify-content:space-between"><div><span class="pill ${o.status}">${o.status}</span> <b>${tiaras(o.amount)} for ${usd(o.price_cents)}</b> · you are the ${seller?'seller':'buyer'}${o.status==='open'?'':' · with '+other}</div></div>${o.status==='open'||o.status==='cancelled'?'':tracker(o)}${body}${o.status==='open'?`<button class="quiet" onclick="cancelOffer('${o.id}')">Withdraw</button>`:''}</div>`}
+async function refresh(){try{data=await api('/api/market'+(me?'?address='+me.address:''));priceBar(data.price);
+ const sells=data.offers.filter(o=>o.side==='sell'),buys=data.offers.filter(o=>o.side==='buy');
+ $('sells').innerHTML=sells.length?sells.map(card).join(''):'<div class="muted">Nobody is selling right now. Post what you want below and sellers get notified.</div>';
+ $('buys').innerHTML=buys.length?buys.map(card).join(''):'<div class="muted">Nobody has posted a request. Post an offer below.</div>';
+ if(me){const live=data.mine.filter(o=>o.status!=='cancelled');$('mine').innerHTML=live.length?live.map(trade).join(''):'<div class="muted">No trades yet.</div>'}
+ }catch(e){$('sells').innerHTML='<div class="muted">'+esc(e.message)+'</div>'}}
+window.post=async side=>{const p=side==='sell'?{amt:'s-amt',price:'s-price',method:'s-method',note:'s-note',msg:'s-msg'}:{amt:'b-amt',price:'b-price',method:'b-method',note:'b-note',msg:'b-msg'};
+ try{if(!me)throw new Error('log in first');const amount=Math.round(parseFloat($(p.amt).value)*COIN),price_cents=Math.round(parseFloat($(p.price).value)*100);if(!(amount>0))throw new Error('amount must be positive');if(!(price_cents>0))throw new Error('price must be positive');
+ const payload={side,amount,price_cents,method:$(p.method).value,note:$(p.note).value.trim()};if(side==='sell'){payload.seller=me.address;payload.contact=$('s-contact').value.trim()}else payload.buyer=me.address;
+ await api('/api/market/offer',await signed(me,payload));show(p.msg,true,'Posted.');$(p.amt).value=$(p.price).value=$(p.note).value='';refresh()}catch(e){show(p.msg,false,e.message)}};
+window.take=async id=>{try{await api(`/api/market/offer/${id}/take`,await signed(me,{offer:id,buyer:me.address}));refresh();window.scrollTo({top:$('mine-card').offsetTop-10,behavior:'smooth'})}catch(e){alert(e.message)}};
+window.takeBuy=async(id,method)=>{const c=prompt(method==='cash_app'?'Your $cashtag (the buyer pays you there):':'Your Apple Cash phone number or email (the buyer pays you there):');if(!c)return;try{await api(`/api/market/offer/${id}/take`,await signed(me,{offer:id,who:me.address,contact:c.trim()}));refresh();window.scrollTo({top:$('mine-card').offsetTop-10,behavior:'smooth'})}catch(e){alert(e.message)}};
+window.paid=async id=>{if(!confirm('Only tap this after the payment has actually gone out.'))return;try{await api(`/api/market/offer/${id}/paid`,await signed(me,{offer:id,buyer:me.address}));refresh()}catch(e){alert(e.message)}};
+window.cancelOffer=async id=>{try{await api(`/api/market/offer/${id}/cancel`,await signed(me,{offer:id,who:me.address}));refresh()}catch(e){alert(e.message)}};
+window.methodHint=()=>{const c=$('s-method').value==='cash_app';$('s-contact-label').textContent=c?'Your $cashtag. Shown only to a buyer who takes the offer.':'Your Apple Cash phone number or email. Shown only to a buyer who takes the offer.';$('s-contact').placeholder=c?'$yourcashtag':'+1 555 555 0100 or you@icloud.com'};
+header();try{setTab(localStorage.getItem('donut.market.tab')||'buy')}catch{setTab('buy')}refresh();setInterval(refresh,15000);
+</script><script>function flipTheme(){var d=document.documentElement;var dark=getComputedStyle(d).getPropertyValue("--bg").trim().toLowerCase().indexOf("#1a1410")===0;var next=dark?"light":"dark";d.dataset.theme=next;try{localStorage.setItem("donut.theme",next)}catch(e){}}</script></body></html>
