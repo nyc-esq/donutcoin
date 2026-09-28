@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Donut Coin</title><link rel="icon" href="/static/donut.png"><link rel="manifest" href="/static/manifest.webmanifest"><link rel="apple-touch-icon" href="/static/icons/icon-180.png"><meta name="theme-color" content="#f4b400">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700;9..144,800&display=swap" rel="stylesheet"><link rel="stylesheet" href="/static/site.css?v=5a7699ebeb"><script>try{var t=localStorage.getItem('donut.theme');if(t)document.documentElement.dataset.theme=t}catch(e){}</script></head><body><div class="wrap">
+<header>
+<img src="/static/donut.png" alt="Princess Donut, the Queen Anne Chonk">
+<div><h1>Donut Coin</h1><p id="tag">Princess Donut, the Queen Anne Chonk. No value, all fun. Node: <span id="node">…</span></p><div id="update" class="note-banner" style="display:none"></div></div>
+</header>
+<nav><a href="/" aria-current="page">Explorer</a><a href="/wallet">Wallet</a><a href="/notes">Notes</a><a href="/market">Market</a><a href="/download">Download</a><a href="/mine">Get started</a><a href="/how">How it works</a><a href="/whitepaper">White paper</a><button type="button" class="themetoggle" onclick="flipTheme()" title="Day or night" aria-label="Switch between day and night"><svg class="i-moon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M21 13.2A9 9 0 1 1 10.8 3a7.2 7.2 0 0 0 10.2 10.2Z"/></svg><svg class="i-sun" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.4v2.2M12 19.4v2.2M4.2 12H2M22 12h-2.2M5.6 5.6 4 4M20 20l-1.6-1.6M18.4 5.6 20 4M4 20l1.6-1.6"/></svg></button><a class="x" href="https://x.com/askdonutai" target="_blank" rel="noopener" title="@askdonutai on X" aria-label="Donut on X, @askdonutai"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a><a class="ask" href="https://askdonut.ai" target="_blank" rel="noopener" title="Ask Princess Donut (no cocker spaniels)" aria-label="Ask Princess Donut at askdonut.ai"><svg viewBox="0 0 64 64" width="26" height="26" aria-hidden="true"><path fill="currentColor" d="M11 21C11 18 15 16 22 17C25 10 33 8 40 10C45 12 47 17 46 21C51 26 48 31 51 36C53 41 50 45 52 49C51 54 44 57 38 55C32 53 31 46 32 39C32 36 31 34 30 33C25 33 19 32 15 30C11 28 10 24 11 21Z"/><circle cx="12" cy="19.6" r="2.6" fill="currentColor"/><circle cx="27.5" cy="21" r="2" fill="var(--bg)"/><circle cx="32" cy="32" r="28" fill="none" stroke="#d92b2b" stroke-width="5"/><line x1="12.5" y1="12.5" x2="51.5" y2="51.5" stroke="#d92b2b" stroke-width="5" stroke-linecap="round"/></svg></a></nav>
+<div class="card" id="primer"><h2 style="margin-top:0">What am I looking at?</h2>
+<p style="margin-bottom:8px">Princess Donut, the Queen Anne Chonk, <a href="/whitepaper">named herself Queen</a> and decided a queen ought to have a coin. This is the coin. Her steed Mongo carries the purse, and bears it with the quiet dignity of someone who would carry anything she asked him to.</p>
+<p style="margin-bottom:8px">Under the Crown it is a real proof-of-work blockchain: a block a minute, mined on ordinary computers by whoever turns up, counted in Ribbons, Tiaras and Crowns because those are the things a show cat actually wins. It is <b>worth nothing on purpose</b>: not money, not an investment, nothing to buy into. Coins are mined, never sold. This page is the ledger, updating every few seconds.</p>
+<p class="muted" style="margin:0">New here? <a href="/mine">Start mining in five minutes</a>, <a href="/wallet">make a wallet</a>, or read <a href="/how">how it works</a>.</p></div>
+<div class="card" id="odds"><h2 style="margin-top:0">Your odds right now</h2>
+<p style="margin-top:0">If you started mining this minute on a computer with <span class="seg" id="thsel" style="display:inline-flex;vertical-align:middle"><button type="button" data-t="2">2</button><button type="button" data-t="4" aria-pressed="true">4</button><button type="button" data-t="8">8</button><button type="button" data-t="16">16</button></span> spare threads, you would find <b id="odds-rate">…</b>.</p>
+<p class="muted" id="odds-why" style="margin:0 0 10px">Worked out from the live network speed and about 4,000 hashes a second per thread, which is what the machines mining here actually do. It changes as people join and leave: more miners, longer odds.</p>
+<pre style="margin:0;overflow-x:auto" id="odds-cmd">python -m donutcoin.miner --node https://donutcoin.meme --address @yourname --threads 4</pre>
+<p class="muted" style="margin:8px 0 0">Full setup on <a href="/mine">Get started</a>, or a single file from <a href="/download">Download</a>. A block is 10,000 DONUT, which buys nothing, on purpose.</p></div>
+<div class="tiles">
+ <div class="tile"><b id="height">–</b><span>height</span></div>
+ <div class="tile"><b id="hashrate">–</b><span>network hashrate (est.)</span></div>
+ <div class="tile"><b id="difficulty">–</b><span>difficulty</span></div>
+ <div class="tile"><b id="supply">–</b><span id="supply-eq"></span><span>DONUT in existence</span></div>
+ <div class="tile"><b id="mempool">–</b><span id="mempool-eq" class="eq"></span><span>waiting for a block</span></div>
+ <div class="tile"><b id="settling">–</b><span id="settling-eq" class="eq"></span><span>settling into the chain</span></div>
+ <div class="tile"><b id="peers">–</b><span>peers</span></div>
+ <div class="tile"><b id="nminers">–</b><span>miners, last hour</span></div>
+</div>
+<div class="card" id="firsts-card" style="display:none"><h2 style="margin-top:0">The firsts</h2>
+<p class="muted" style="margin-top:0">Units the network has never made. Each one leaves this card the moment it exists.</p>
+<div id="firsts"></div></div>
+<div class="card" id="charts"><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:18px"><h2 style="margin:0">Live charts</h2><div class="seg" id="winsel"><button type="button" data-h="24">24 hours</button><button type="button" data-h="168">7 days</button><button type="button" data-h="720">30 days</button></div></div><div class="cgrid">
+ <figure class="chart"><svg id="c-perhour" viewBox="0 0 400 160" preserveAspectRatio="none"></svg><figcaption>Blocks found per hour, <span class="win"></span></figcaption></figure>
+ <figure class="chart"><svg id="c-gap" viewBox="0 0 400 160" preserveAspectRatio="none"></svg><figcaption>Average seconds between blocks, <span class="win"></span> (dashed: the 60 s target)</figcaption></figure>
+ <figure class="chart"><svg id="c-diff" viewBox="0 0 400 160" preserveAspectRatio="none"></svg><figcaption>Difficulty, <span class="win"></span></figcaption></figure>
+ <figure class="chart"><svg id="c-who" viewBox="0 0 400 160"></svg><figcaption>Who found the blocks, <span class="win"></span></figcaption></figure>
+ <figure class="chart"><svg id="c-race" viewBox="0 0 400 160" preserveAspectRatio="none"></svg><figcaption>Blocks per hour by miner, <span class="win"></span> <span id="l-race"></span></figcaption></figure>
+ <figure class="chart"><svg id="c-tally" viewBox="0 0 400 160" preserveAspectRatio="none"></svg><figcaption>Running tally over <span class="win"></span> <span id="l-tally"></span></figcaption></figure>
+ <figure class="chart"><svg id="c-hash" viewBox="0 0 400 160" preserveAspectRatio="none"></svg><figcaption>Network hashrate, <span class="win"></span></figcaption></figure>
+ <figure class="chart"><svg id="c-txs" viewBox="0 0 400 160" preserveAspectRatio="none"></svg><figcaption>Transactions per hour, <span class="win"></span> (mined coins excluded)</figcaption></figure>
+ <figure class="chart"><svg id="c-supply" viewBox="0 0 400 160" preserveAspectRatio="none"></svg><figcaption>DONUT in existence, <span class="win"></span> (dashed: the next unit mark)</figcaption></figure>
+ <figure class="chart"><svg id="c-nminers" viewBox="0 0 400 160" preserveAspectRatio="none"></svg><figcaption>Miners at work, <span class="win"></span></figcaption></figure>
+</div>
+<div class="row" style="margin-top:14px;justify-content:space-between"><div><span class="muted">Since the last block</span> <b id="since" style="font-size:22px">–</b> <span class="muted">(target 60 s)</span></div></div>
+</div>
+<div class="card" id="notes-card"><h2 style="margin-top:0">Said on the chain</h2><p class="muted" style="margin-top:0">Notes written into transactions, 280 characters at most. The block gives each one its time, the signature its author. To speak you need a licence (a block found in the last week), a Ribbon in hand, a @username and a 100 DONUT fee; one note per block. Post yours from the <a href="/wallet">wallet</a>. Every note has a permanent link on the <a href="/notes">Notes</a> page, and there is an <a href="/notes.xml">RSS feed</a>.</p><div id="notes"><span class="muted">Loading…</span></div></div>
+<div class="card"><h2 style="margin-top:0">The race</h2><div class="scroll"><table><thead><tr><th>Who</th><th>Last hour</th><th>Last 24 h</th><th>Share</th><th>Best run</th></tr></thead><tbody id="race"><tr><td class="muted">Loading…</td></tr></tbody></table></div><div class="muted" id="streak" style="margin-top:10px"></div></div>
+<div class="card"><h2 style="margin-top:0">All-time miners</h2><p class="muted" style="margin-top:0">Every block since genesis, by whoever was paid for it.</p>
+<div class="scroll"><table><thead><tr><th>Who</th><th>Blocks</th><th>Share</th><th>Earned</th><th>Since</th></tr></thead><tbody id="alltime"><tr><td class="muted">Loading…</td></tr></tbody></table></div></div>
+<div class="card"><h2 style="margin-top:0">Who holds Donut Coin</h2>
+<div class="tiles" style="margin:10px 0 0">
+ <div class="tile"><b id="naddr">–</b><span>addresses hold coins</span></div>
+ <div class="tile"><b id="nnamed">–</b><span>with a @username</span></div>
+ <div class="tile"><b id="nmined">–</b><span>mined their own</span></div>
+ <div class="tile"><b id="nrecv">–</b><span>paid by someone else</span></div>
+</div>
+<p class="muted" style="margin:10px 0 0">An address is a hash of a public key and says nothing about who owns it. A username is optional: <a href="/wallet">make one</a> and your blocks and notes carry your name.</p></div>
+<div class="card"><h2 style="margin-top:0">Top holders</h2><p class="muted" style="margin-top:0">Everyone holding a Ribbon or more.</p><div class="scroll"><table><thead><tr><th>#</th><th>Who</th><th>Balance</th><th>Share</th></tr></thead><tbody id="holders"><tr><td class="muted" colspan="4">Loading…</td></tr></tbody></table></div></div>
+<a id="lookup"></a><form class="inline" onsubmit="return lookup()"><input id="q" placeholder="@username or a D… address" autocapitalize="none"><button>Look up</button></form>
+<div id="addr"></div>
+<div class="scroll"><table><thead><tr><th>Height</th><th>When</th><th>Miner</th><th>Txs</th><th>Difficulty</th><th>Hash</th></tr></thead><tbody id="blocks"></tbody></table></div>
+<div class="card"><h2 style="margin-top:0">Donut Coin moving</h2><p class="muted" style="margin-top:0">The last ten transfers. Until final counts the blocks still needed: at 21 the chain will no longer rewrite it, which is also when the market settles a trade. Mined coins are not here; they are in the block table below. <b>@donut</b> used to send one block&rsquo;s worth, 10,000 DONUT, to whoever had found the fewest blocks lately, as a thank-you for turning up. That tip is paused for now.</p>
+<div class="scroll"><table><thead><tr><th>When</th><th>From</th><th>To</th><th>Amount</th><th>Until final</th></tr></thead><tbody id="xfers"><tr><td class="muted">Loading…</td></tr></tbody></table></div></div>
+<footer>Not money, not an investment, not for sale. Scrypt proof of work, one-minute blocks, 10,000 DONUT a block, never halves. Checkpoints pin history; a heavier chain can replace at most the last 20 blocks; the market settles at 21. Four units above the DONUT, base 10: Ribbon (1,000,000 DONUT, 100 blocks), Tiara (10 Ribbons, about a day of the network), Crown (10 Tiaras, about a week), Queen (10 Crowns, about ten weeks). The ladder stops at the Queen, because she does. Reward spendable after <span id="matur">–</span> blocks. Refreshes every 5 s.<div class="footlinks"><a href="/terms">Terms</a><a href="/privacy">Privacy</a><a href="/source">Source</a><a href="https://askdonut.ai" target="_blank" rel="noopener">Ask her: askdonut.ai</a><a href="https://mattdinniman.com" target="_blank" rel="noopener">All Hail Matt Dinniman</a><span class="ver">Donut Coin v{{SITE_VERSION}}</span></div></footer>
+</div>
+<script>
+const $=id=>document.getElementById(id), COIN=1e8;
+const fmt=n=>(n/COIN).toLocaleString(undefined,{maximumFractionDigits:2});
+const settled=(tip,h)=>{const c=tip-h+1;return c>20?'<span class="pill">final</span>':`${21-c} more block${21-c===1?'':'s'}`};
+const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const UNITS=[[1e9,'Queen'],[1e8,'Crown'],[1e7,'Tiara'],[1e6,'Ribbon']];
+const tiaras=n=>{for(const [k,name] of UNITS){if(n>=k*COIN){const v=n/(k*COIN);return `<i class="eq">= ${v.toLocaleString(undefined,{maximumFractionDigits:2})} ${name}${v===1?'':'s'}</i>`}}return ''};
+const ago=t=>{const s=Math.max(0,Math.floor(Date.now()/1000-t));return s<60?s+' s ago':s<3600?Math.floor(s/60)+' min ago':Math.floor(s/3600)+' h ago'};
+const hr=h=>h>=1e6?(h/1e6).toFixed(2)+' MH/s':h>=1e3?(h/1e3).toFixed(1)+' kH/s':Math.round(h)+' H/s';
+
+// Odds for a newcomer: their share of the network is theirs / (network + theirs), and the chain
+// makes a block every `spacing` seconds, so they find one every spacing / share seconds on average.
+// Per-thread speed is measured from this chain's own miners (2026-09-25).
+let oddsThreads=4;
+function odds(){const n=window._net; if(!n) return; const mine=oddsThreads*4000, share=mine/(n.h+mine), secs=n.spacing/share;
+ const per=secs<3600?'a block about every '+Math.max(1,Math.round(secs/60))+' minutes':secs<86400?'a block about every '+(secs/3600).toFixed(secs<36000?1:0)+' hours':'a block about every '+(secs/86400).toFixed(secs<864000?1:0)+' days';
+ const day=Math.round(86400/secs);
+ $('odds-rate').textContent=per+(day>=2?', around '+day.toLocaleString()+' a day':'')+' ('+Math.round(share*100)+'% of all blocks)';
+ $('odds-why').textContent='Worked out from the live network speed, '+hr(n.h)+', and about 4,000 hashes a second per thread, which is what the machines mining here actually do. It changes as people join and leave: more miners, longer odds.';}
+document.querySelectorAll('#thsel button').forEach(b=>b.onclick=()=>{oddsThreads=+b.dataset.t;document.querySelectorAll('#thsel button').forEach(x=>x.setAttribute('aria-pressed',x===b));$('odds-cmd').textContent='python -m donutcoin.miner --node https://donutcoin.meme --address @yourname --threads '+oddsThreads;odds()});
+async function refresh(){try{
+ const i=await (await fetch('/api/info')).json();
+ window._net={h:i.hashrate||0,spacing:i.spacing||60}; odds();
+ $('node').textContent=i.name+(i.version?' · v'+i.version:''); if(i.update){$('update').style.display='block';$('update').innerHTML='A newer Donut Coin is out: <b>v'+esc(i.update.version)+'</b> (this node runs v'+esc(i.version)+').'+(i.update.rules?' It changes a rule: '+esc(JSON.stringify(i.update.rules))+'.':'')+' <a href="/download">Get it</a>; nothing updates by itself.'}else $('update').style.display='none'; $('height').textContent=i.height.toLocaleString(); $('hashrate').textContent=hr(i.hashrate);
+ $('difficulty').textContent=i.difficulty.toLocaleString(); $('supply').textContent=fmt(i.supply);$('supply-eq').innerHTML=tiaras(i.supply); $('mempool').textContent=i.mempool;$('mempool-eq').textContent=i.mempool?'lands in the next block':'the chain is caught up';$('settling').textContent=i.settling??'–';$('settling-eq').textContent=i.settling?`next one final in ${i.settling_left} block${i.settling_left===1?'':'s'}`:'nothing left to settle'; $('peers').textContent=i.peers; if(i.maturity)$('matur').textContent=i.maturity;
+ const b=await (await fetch('/api/blocks?limit=25')).json();
+ $('blocks').innerHTML=b.map(x=>`<tr><td>${x.height}</td><td>${ago(x.timestamp)}</td><td>${whoLink(x.miner,x.miner_name)}</td><td>${x.txs}</td><td>${x.difficulty}</td><td class="mono">${x.hash.slice(0,20)}…</td></tr>`).join('');
+}catch(e){}}
+// Anyone without a username shows as a short address; clicking it looks the address up below, so a
+// stranger's miner is reachable without a column wide enough for 34 characters (2026-09-19).
+window.showAddr=a=>{$('q').value=a;lookup();$('addr').scrollIntoView({behavior:'smooth',block:'center'});return false};
+const whoLink=(addr,name)=>name?`<a href="/who/@${esc(name)}"><b>@${esc(name)}</b></a>`:`<a href="#lookup" class="mono addr" title="${esc(addr||'')}" onclick="return showAddr('${esc(addr||'')}')">${esc((addr||'').slice(0,10))}…</a>`;
+async function lookup(){let a=$('q').value.trim();if(!a)return false;const box=$('addr');box.style.display='block';let name='';
+ if(a.startsWith('@')||/^[a-z0-9_]{3,24}$/i.test(a)){const n=await fetch('/api/account/address/'+a.replace(/^@/,'').toLowerCase());if(!n.ok){box.textContent='No account named @'+a.replace(/^@/,'').toLowerCase()+', and not an address.';return false}const j=await n.json();name='@'+j.username;a=j.address}
+ const r=await fetch('/api/address/'+a);
+ if(!r.ok){box.textContent='Not a Donut Coin address.';return false}const d=await r.json();
+ box.innerHTML=`${name?'<div style="font-size:18px"><b>'+name+'</b></div>':''}<div class="mono">${d.address}</div><div style="font-size:22px;margin:6px 0"><b>${fmt(d.balance)} DONUT</b>${tiaras(d.balance)} <span class="pill">${fmt(d.spendable.reduce((s,u)=>s+u.amount,0))} spendable</span></div>`+
+ (d.recent.length?'<div class="scroll"><table><thead><tr><th>Height</th><th>Amount</th><th>Type</th><th>Txid</th></tr></thead><tbody>'+d.recent.map(t=>`<tr><td>${t.height}</td><td>${(t.net>=0?'+':'−')+fmt(Math.abs(t.net))} DONUT</td><td>${t.coinbase?'mined':t.spent_from?'sent':'received'}</td><td class="mono">${t.txid.slice(0,20)}…</td></tr>`).join('')+'</tbody></table>':'<p>No transactions yet.</p>');
+ return false}
+// ---- live charts, drawn from /api/blocks as inline SVG (no libraries)
+const C={line:'#7aa2f7',bar:'#e0af68',pie:['#7aa2f7','#ff9e64','#9ece6a','#bb9af7','#f7768e','#e0af68','#2ac3de','#c0caf5'],axis:'#a09383',grid:'rgba(128,110,90,.18)'};
+const svgOf=id=>$(id), txt=(x,y,t,a='start',s=11)=>`<text x="${x}" y="${y}" font-size="${s}" fill="${C.axis}" text-anchor="${a}" font-family="-apple-system,Helvetica,Arial">${t}</text>`;
+function bars(id,vals,labels){const W=400,H=160,L=30,B=24,T=10;const max=Math.max(1,...vals);const w=(W-L-6)/vals.length;let g='';
+ for(let i=0;i<vals.length;i++){const h=(H-T-B)*vals[i]/max;g+=`<rect x="${(L+i*w).toFixed(1)}" y="${(H-B-h).toFixed(1)}" width="${(w-2).toFixed(1)}" height="${h.toFixed(1)}" fill="${C.bar}" rx="2"/>`}
+ g+=txt(L-4,T+8,max,'end')+txt(L-4,H-B,0,'end');labels.forEach((l,i)=>{if(l)g+=txt(L+i*w+w/2,H-8,l,'middle',10)});svgOf(id).innerHTML=g}
+function line(id,vals,opts={}){const W=400,H=160,B=18,T=10;if(vals.length<2){svgOf(id).innerHTML=txt(W/2,H/2,'not enough blocks yet','middle');return}
+ const lo=opts.min??Math.min(...vals),hi=Math.max(opts.max??-Infinity,...vals,lo+1e-9);
+ // the axis labels sit outside the plot, so the left margin has to fit the longest of them: a bare
+ // number needs ~34, but "0 DONUT" or "1.2 Crowns" needs more and used to be cut off (2026-09-18)
+ const hiT=opts.fmt?opts.fmt(hi):hi.toPrecision(3),loT=opts.fmt?opts.fmt(lo):lo.toPrecision(3);
+ const L=Math.min(100,Math.max(34,Math.ceil(Math.max(String(hiT).length,String(loT).length)*6.6)+10));   // 6.6 covers uppercase: "0 DONUT" is wider than "1 Crown"
+ const x=i=>L+(W-L-6)*i/(vals.length-1),y=v=>T+(H-T-B)*(1-(v-lo)/(hi-lo));
+ let g=`<line x1="${L}" y1="${y(lo)}" x2="${W-6}" y2="${y(lo)}" stroke="${C.grid}"/>`;if(opts.ref!=null&&opts.ref>=lo&&opts.ref<=hi)g+=`<line x1="${L}" y1="${y(opts.ref)}" x2="${W-6}" y2="${y(opts.ref)}" stroke="${C.axis}" stroke-dasharray="4 4"/>`;
+ g+=`<path d="${vals.map((v,i)=>`${i?'L':'M'}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' ')}" fill="none" stroke="${C.line}" stroke-width="2"/>`;
+ g+=txt(L-4,T+8,hiT,'end')+txt(L-4,H-B,loT,'end');svgOf(id).innerHTML=g}
+function stacked(id,series,labels){const W=400,H=160,L=30,B=24,T=10;const n=labels.length;const tot=labels.map((_,i)=>series.reduce((s,q)=>s+q.vals[i],0));const max=Math.max(1,...tot);const w=(W-L-6)/n;let g='';
+ for(let i=0;i<n;i++){let y=H-B;series.forEach((s,k)=>{const h=(H-T-B)*s.vals[i]/max;if(h>0){y-=h;g+=`<rect x="${(L+i*w).toFixed(1)}" y="${y.toFixed(1)}" width="${(w-2).toFixed(1)}" height="${h.toFixed(1)}" fill="${C.pie[k%C.pie.length]}"/>`}})}
+ g+=txt(L-4,T+8,max,'end')+txt(L-4,H-B,0,'end');labels.forEach((l,i)=>{if(l)g+=txt(L+i*w+w/2,H-8,l,'middle',10)});svgOf(id).innerHTML=g}
+function lines(id,series,opts={}){const W=400,H=160,L=34,B=18,T=10;const n=Math.max(0,...series.map(s=>s.vals.length));if(n<2){svgOf(id).innerHTML=txt(W/2,H/2,'not enough blocks yet','middle');return}
+ const hi=Math.max(1,...series.flatMap(s=>s.vals));const x=i=>L+(W-L-6)*i/(n-1),y=v=>T+(H-T-B)*(1-v/hi);
+ let g=`<line x1="${L}" y1="${y(0)}" x2="${W-6}" y2="${y(0)}" stroke="${C.grid}"/>`;
+ series.forEach((s,k)=>{g+=`<path d="${s.vals.map((v,i)=>`${i?'L':'M'}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' ')}" fill="none" stroke="${C.pie[k%C.pie.length]}" stroke-width="2"/>`});
+ g+=txt(L-4,T+8,hi,'end')+txt(L-4,H-B,0,'end');svgOf(id).innerHTML=g}
+const legend=(id,series)=>{$(id).innerHTML=series.map((s,k)=>`<span class="sw" style="background:${C.pie[k%C.pie.length]}"></span>${s.name}`).join('')};
+function donut(id,parts){const cx=100,cy=80,r=60,ri=34;const total=parts.reduce((s,p)=>s+p.n,0)||1;let a=-Math.PI/2,g='';
+ parts.forEach((p,i)=>{const b=a+2*Math.PI*p.n/total;const big=b-a>Math.PI?1:0;const P=(t,rr)=>`${(cx+rr*Math.cos(t)).toFixed(1)},${(cy+rr*Math.sin(t)).toFixed(1)}`;
+  g+=`<path d="M${P(a,r)} A${r},${r} 0 ${big} 1 ${P(b,r)} L${P(b,ri)} A${ri},${ri} 0 ${big} 0 ${P(a,ri)} Z" fill="${C.pie[i%C.pie.length]}"/>`;a=b});
+ g+=txt(cx,cy+4,total,'middle',16);parts.slice(0,6).forEach((p,i)=>{g+=`<rect x="190" y="${22+i*20}" width="10" height="10" fill="${C.pie[i%C.pie.length]}"/>`+txt(206,31+i*20,`${p.name} · ${p.n} (${Math.round(100*p.n/total)}%)`,'start',11)});svgOf(id).innerHTML=g}
+let tipTime=0; setInterval(()=>{if(tipTime)$('since').textContent=Math.max(0,Math.floor(Date.now()/1000-tipTime))+' s'},1000);
+const unitsOf=n=>{for(const [k,name] of UNITS){if(n>=k*COIN){const v=n/(k*COIN);return v.toLocaleString(undefined,{maximumFractionDigits:2})+' '+name+(v===1?'':'s')}}return fmt(n)+' DONUT'};
+async function xfers(){try{const [t,i]=await Promise.all([(await fetch('/api/transfers?limit=10')).json(),(await fetch('/api/info')).json()]);
+ const deep=h=>{const c=i.height-h+1;return c>20?`<span class="pill">final</span>`:`${21-c} more block${21-c===1?'':'s'}`};   // 21 confirmations and the chain will not rewrite it
+ $('xfers').innerHTML=t.length?t.map(x=>{const who=whoLink;
+  const what=x.note?`<span class="muted">posted a note</span> <a href="/note/${x.txid}">read it</a>`:(x.amount?fmt(x.amount)+' DONUT'+(x.outputs>1?` <span class="muted">(${x.outputs} outputs)</span>`:''):'<span class="muted">nothing</span>');
+  return `<tr><td>${ago(x.timestamp)}</td><td>${who(x.from,x.from_name)}</td><td>${x.note?'<span class="muted">itself</span>':who(x.to,x.to_name)}</td><td>${what}</td><td class="muted">${deep(x.height)}</td></tr>`}).join(''):'<tr><td colspan="5" class="muted">Nothing has moved yet.</td></tr>'}catch(e){}}
+async function stats(){try{const s=await (await fetch('/api/stats')).json();tipTime=s.tip_time;$('naddr').textContent=s.addresses;$('nnamed').textContent=s.holders_named??'–';$('nmined').textContent=s.holders_mined??'–';$('nrecv').textContent=(s.addresses!=null&&s.holders_mined!=null)?s.addresses-s.holders_mined:'–';
+ const MILES=[['Crown',1e8,'100 Ribbons'],['Queen',1e9,'10 Crowns']];
+ const perDay=s.hours.reduce((a,h)=>a+h.blocks,0)||1440;
+ const rows=MILES.filter(([,d])=>s.supply<d*COIN).map(([name,d,of])=>{
+  const target=d*COIN, pct=s.supply/target*100, left=(target-s.supply)/(10000*COIN), days=left/perDay;
+  const eta=new Date(Date.now()+days*86400000);
+  const when=days<1?'later today':days<2?'tomorrow':`about ${Math.round(days)} days away, around ${eta.toLocaleDateString(undefined,{month:'long',day:'numeric'})}`;
+  return `<div class="mile"><div><b>The first ${name}</b> <span class="muted">${of}, ${d.toLocaleString()} DONUT</span></div>
+   <div class="bar"><i style="width:${Math.max(0.8,pct).toFixed(1)}%"></i></div>
+   <div class="muted" style="font-size:13px;margin-top:5px"><b>${pct.toFixed(1)}%</b> of the way there · ${Math.round(left).toLocaleString()} blocks to go · ${when}</div></div>`});
+ $('firsts-card').style.display=rows.length?'':'none'; $('firsts').innerHTML=rows.join('');
+ $('alltime').innerHTML=(s.miners||[]).length?s.miners.map(m=>`<tr><td>${whoLink(m.address,m.name)}</td><td>${m.blocks.toLocaleString()}</td><td>${m.share}%</td><td>${unitsOf(m.earned)}</td><td>block ${m.first.toLocaleString()}</td></tr>`).join(''):'<tr><td class="muted">No blocks yet.</td></tr>';
+ const labels=s.hours.map((h,i)=>i%6===0?`-${23-i}h`:'');
+ $('holders').innerHTML=s.holders.map((h,i)=>`<tr><td>${i+1}</td><td>${whoLink(h.address,h.name)}</td><td>${unitsOf(h.balance)}</td><td>${h.share}%</td></tr>`).join('')||'<tr><td colspan="4" class="muted">nobody yet</td></tr>';
+ }catch(e){}}
+const WINS=[[24,'24 hours'],[168,'7 days'],[720,'30 days']];
+let WIN=+(localStorage.getItem('donut.win')||168); if(!WINS.some(w=>w[0]===WIN))WIN=168;
+const winName=()=>(WINS.find(w=>w[0]===WIN)||WINS[1])[1];
+function paintSeg(){document.querySelectorAll('#winsel button').forEach(b=>b.setAttribute('aria-pressed',String(+b.dataset.h===WIN)));
+ document.querySelectorAll('.win').forEach(e=>e.textContent=winName())}
+document.getElementById('winsel').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+ WIN=+b.dataset.h;try{localStorage.setItem('donut.win',WIN)}catch{}paintSeg();charts()});
+
+// Every chart on this card comes from one windowed pass on the node, so they always agree with each
+// other and with the label on the card (2026-09-19).
+async function charts(){try{
+ const s=await (await fetch('/api/series?hours='+WIN)).json();
+ if(!s.blocks||s.blocks.length<2)return;
+ const span=Math.max(1,s.to-s.from),n=s.blocks.length;
+ const lab=k=>{const left=(n-k)/n*span;return span>=3*86400?`-${Math.round(left/86400)}d`:`-${Math.round(left/3600)}h`};
+ const labels=s.blocks.map((_,k)=>k%14===0?lab(k):'');
+ bars('c-perhour',s.blocks,labels);
+ line('c-gap',s.gap,{min:0,ref:60,fmt:v=>Math.round(v)+'s'});
+ line('c-diff',s.difficulty,{min:0,fmt:v=>v.toFixed(2)});
+ donut('c-who',s.who);
+ stacked('c-race',s.by_miner,labels); legend('l-race',s.by_miner);
+ lines('c-tally',s.tally); legend('l-tally',s.tally);
+ line('c-hash',s.hashrate,{min:0,fmt:v=>v>=1e6?(v/1e6).toFixed(1)+'M':v>=1e3?(v/1e3).toFixed(0)+'k':Math.round(v)+''});
+ bars('c-txs',s.txs,labels);
+ const marks=[[1e6,'Ribbon'],[1e7,'Tiara'],[1e8,'Crown'],[1e9,'Queen']].map(([k,nm])=>[k*COIN,nm]);
+ const sup=s.supply[s.supply.length-1],next=marks.find(([k])=>k>sup);
+ line('c-supply',s.supply,{min:0,max:next?next[0]:undefined,ref:next?next[0]:null,fmt:v=>unitsOf(v)});
+ bars('c-nminers',s.miners,labels);
+ paintSeg();
+ }catch(e){}}
+
+// The race table and the streak need block-by-block detail the series does not carry (a best run is
+// a string of consecutive blocks), so they keep their own fetch of the last day.
+async function race(){try{const b=await (await fetch('/api/blocks?limit=1500')).json();const now=Math.floor(Date.now()/1000);
+ const day=b.filter(x=>now-x.timestamp<=86400&&!x.dead).sort((p,q)=>p.timestamp-q.timestamp);
+ const key=x=>x.miner_name?'@'+x.miner_name:x.miner.slice(0,10)+'…';const addrOf={};day.forEach(x=>{addrOf[key(x)]=x.miner});
+ const who={};day.forEach(x=>{who[key(x)]=(who[key(x)]||0)+1});
+ const names=Object.entries(who).sort((p,q)=>q[1]-p[1]).map(e=>e[0]);
+ $('nminers').textContent=new Set(b.filter(x=>!x.dead&&now-x.timestamp<3600).map(x=>x.miner)).size;
+ const hourAgo=now-3600;
+ const rows=names.map((nm,i)=>{let best=0,run=0,hour=0,total=0;day.forEach(x=>{if(key(x)===nm){run++;total++;if(x.timestamp>hourAgo)hour++;best=Math.max(best,run)}else run=0});
+  return {n:nm,i,hour,total,share:day.length?100*total/day.length:0,best}});
+ $('race').innerHTML=rows.length?rows.map(r=>`<tr><td><span class="sw" style="background:${r.i<5?C.pie[r.i]:C.pie[5]}"></span>${whoLink(addrOf[r.n], r.n.startsWith('@')?r.n.slice(1):null)}</td><td>${r.hour}</td><td>${r.total}</td><td>${r.share.toFixed(0)}%</td><td>${r.best}</td></tr>`).join(''):'<tr><td colspan="5" class="muted">No blocks in the last 24 h.</td></tr>';
+ const lb=b.filter(x=>!x.dead);let streak=0;
+ if(lb.length){const t=key(lb[0]);for(const x of lb){if(key(x)===t)streak++;else break}
+  $('streak').innerHTML=`${whoLink(addrOf[t], t.startsWith('@')?t.slice(1):null)} found the last ${streak} block${streak===1?'':'s'}${streak>1?' in a row':''}. Best run is the longest string of consecutive blocks in the last 24 h.`}
+ }catch(e){}}
+async function notes(){try{const d=await (await fetch('/api/notes?limit=30')).json();const n=d.notes;
+ $('notes').innerHTML=n.length?n.map(x=>`<div class="note"><div>${esc(x.text)}</div><div class="muted" style="font-size:12px;margin-top:4px">${x.from_name?'<a href="/who/@'+esc(x.from_name)+'"><b>@'+esc(x.from_name)+'</b></a>':'<span class="mono">'+(x.from||'').slice(0,12)+'…</span>'} · block ${x.height} · ${new Date(x.timestamp*1000).toLocaleString()} · ${settled(d.height,x.height)} · <a href="/note/${x.txid}">link</a></div></div>`).join(''):'<span class="muted">Nothing said yet. The first note is yours to write.</span>'}catch(e){}}
+paintSeg(); refresh(); charts(); race(); stats(); notes(); xfers(); setInterval(notes,30000); setInterval(refresh,5000); setInterval(charts,30000); setInterval(race,30000); setInterval(stats,30000); setInterval(xfers,15000);
+</script><script>function flipTheme(){var d=document.documentElement;var dark=getComputedStyle(d).getPropertyValue("--bg").trim().toLowerCase().indexOf("#1a1410")===0;var next=dark?"light":"dark";d.dataset.theme=next;try{localStorage.setItem("donut.theme",next)}catch(e){}}</script></body></html>

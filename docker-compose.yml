@@ -1,0 +1,29 @@
+# docker compose up -d   then open http://localhost:8555
+services:
+  donutcoin:
+    build: .
+    # image: ghcr.io/nyc-esq/donutcoin:latest   # once a published image exists, use this instead of build
+    container_name: donutcoin
+    restart: unless-stopped
+    ports:
+      - "8555:8555"
+    environment:
+      # Who to catch up from. Your node still validates every block itself, so this is not trust.
+      DONUTCOIN_PEERS: https://donutcoin.meme
+      # The name this node calls itself in /api/info. Yours, not anyone else's business.
+      DONUTCOIN_NAME: my node
+    volumes:
+      - donutcoin-data:/data
+
+  # Mining is opt-in and off by default: a node is useful on its own, and nobody's container
+  # should start burning CPU because they ran `up`. Uncomment, set DONUTCOIN_TO, and the miner
+  # talks to the node above.
+  #
+  # miner:
+  #   build: .
+  #   restart: unless-stopped
+  #   depends_on: [donutcoin]
+  #   command: ["miner", "--node", "http://donutcoin:8555", "--address", "@yourname", "--threads", "2"]
+
+volumes:
+  donutcoin-data:

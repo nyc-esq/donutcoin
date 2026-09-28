@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta property="og:title" content="{{OGTITLE}}"><meta property="og:description" content="{{OGDESC}}"><meta name="description" content="{{OGDESC}}"><meta name="twitter:card" content="summary"><meta property="og:type" content="profile"><meta property="og:url" content="https://donutcoin.meme/who/{{SLUG}}"><meta property="og:image" content="https://donutcoin.meme/static/donut.png"><title>{{TITLE}} · Donut Coin</title><link rel="icon" href="/static/donut.png"><link rel="manifest" href="/static/manifest.webmanifest"><link rel="apple-touch-icon" href="/static/icons/icon-180.png"><meta name="theme-color" content="#f4b400">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700;9..144,800&display=swap" rel="stylesheet"><link rel="stylesheet" href="/static/site.css?v=5a7699ebeb"><script>try{var t=localStorage.getItem('donut.theme');if(t)document.documentElement.dataset.theme=t}catch(e){}</script></head><body><div class="wrap">
+<header>
+<img src="/static/donut.png" alt="Princess Donut, the Queen Anne Chonk">
+<div><h1>Donut Coin</h1><p id="tag">Princess Donut, the Queen Anne Chonk. No value, all fun.</p></div>
+</header>
+<nav><a href="/">Explorer</a><a href="/wallet">Wallet</a><a href="/notes">Notes</a><a href="/market">Market</a><a href="/download">Download</a><a href="/mine">Get started</a><a href="/how">How it works</a><a href="/whitepaper">White paper</a><button type="button" class="themetoggle" onclick="flipTheme()" title="Day or night" aria-label="Switch between day and night"><svg class="i-moon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M21 13.2A9 9 0 1 1 10.8 3a7.2 7.2 0 0 0 10.2 10.2Z"/></svg><svg class="i-sun" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.4v2.2M12 19.4v2.2M4.2 12H2M22 12h-2.2M5.6 5.6 4 4M20 20l-1.6-1.6M18.4 5.6 20 4M4 20l1.6-1.6"/></svg></button><a class="x" href="https://x.com/askdonutai" target="_blank" rel="noopener" title="@askdonutai on X" aria-label="Donut on X, @askdonutai"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a><a class="ask" href="https://askdonut.ai" target="_blank" rel="noopener" title="Ask Princess Donut (no cocker spaniels)" aria-label="Ask Princess Donut at askdonut.ai"><svg viewBox="0 0 64 64" width="26" height="26" aria-hidden="true"><path fill="currentColor" d="M11 21C11 18 15 16 22 17C25 10 33 8 40 10C45 12 47 17 46 21C51 26 48 31 51 36C53 41 50 45 52 49C51 54 44 57 38 55C32 53 31 46 32 39C32 36 31 34 30 33C25 33 19 32 15 30C11 28 10 24 11 21Z"/><circle cx="12" cy="19.6" r="2.6" fill="currentColor"/><circle cx="27.5" cy="21" r="2" fill="var(--bg)"/><circle cx="32" cy="32" r="28" fill="none" stroke="#d92b2b" stroke-width="5"/><line x1="12.5" y1="12.5" x2="51.5" y2="51.5" stroke="#d92b2b" stroke-width="5" stroke-linecap="round"/></svg></a></nav>
+<div class="card">
+<h2 style="margin:0 0 6px;font-size:30px">{{WHO}}</h2>
+<p style="margin:0 0 4px;font:400 20px/1.45 var(--serif)">{{BRAG}}</p>
+<p class="muted mono" style="font-size:12px;margin:10px 0 0;word-break:break-all">{{ADDRESS}}</p>
+<div class="tiles" style="margin:14px 0 0">
+ <div class="tile"><b>{{BLOCKS}}</b><span>blocks found</span></div>
+ <div class="tile"><b>{{RANK}}</b><span>among all miners</span></div>
+ <div class="tile"><b>{{SHARE}}</b><span>of every block ever</span></div>
+ <div class="tile"><b>{{HOLDS}}</b><span class="eq">{{HOLDS_EQ}}</span><span>DONUT held</span></div>
+</div>
+<table style="margin-top:16px"><tbody>
+<tr><td class="muted">First block</td><td>{{FIRST}}</td></tr>
+<tr><td class="muted">Most recent</td><td>{{LAST}}</td></tr>
+<tr style="{{NOTESROW}}"><td class="muted">Notes written</td><td>{{NOTES}} · <a href="/notes">read them</a></td></tr>
+<tr><td class="muted">Mined in total</td><td>{{EARNED}} DONUT</td></tr>
+</tbody></table>
+<p class="muted" style="margin:14px 0 0">Every figure here is read from the chain, which anyone can check: <a href="/api/who/{{SLUG}}">the same numbers as JSON</a>, or <a href="/">the explorer</a>.</p></div>
+<div class="card"><h2 style="margin-top:0">Want one of these?</h2>
+<p style="margin-bottom:8px">This page exists because someone pointed a spare CPU at a coin that is worth nothing. Yours would take about five minutes.</p>
+<p style="margin:0"><a href="/mine">Start mining</a> · <a href="/download">Download</a> · <a href="/how">How it works</a></p></div>
+<footer>Not money, not an investment, not for sale.<div class="footlinks"><a href="/terms">Terms</a><a href="/privacy">Privacy</a><a href="/source">Source</a><a href="https://askdonut.ai" target="_blank" rel="noopener">Ask her: askdonut.ai</a><a href="https://mattdinniman.com" target="_blank" rel="noopener">All Hail Matt Dinniman</a><span class="ver">Donut Coin v{{SITE_VERSION}}</span></div></footer></div><script>function flipTheme(){var d=document.documentElement;var dark=getComputedStyle(d).getPropertyValue("--bg").trim().toLowerCase().indexOf("#1a1410")===0;var next=dark?"light":"dark";d.dataset.theme=next;try{localStorage.setItem("donut.theme",next)}catch(e){}}</script></body></html>
